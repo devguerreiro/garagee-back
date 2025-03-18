@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,62 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  public_id    String         @unique @default(uuid())
+  name         String
+  apartment    String
+  username     String         @unique
+  password     String
+  created_at   DateTime       @default(now())
+  is_active    Boolean        @default(false)
+  building_id  Int
+  building     Building       @relation(fields: [building_id], references: [id])
+  ParkingSpace ParkingSpace[]
+  Booking      Booking[]
+}
+
+model Building {
+  id         Int     @id @default(autoincrement())
+  public_id  String  @unique @default(uuid())
+  name       String
+  cep        Int
+  address    String
+  complement String?
+  city       String
+  state      String
+  User       User[]
+}
+
+model ParkingSpace {
+  id         Int       @id @default(autoincrement())
+  public_id  String    @unique @default(uuid())
+  identifier String
+  guidance   String
+  is_covered Boolean
+  owner_id   Int
+  owner      User      @relation(fields: [owner_id], references: [id])
+  Booking    Booking[]
+}
+
+enum BookingStatus {
+  APPROVED
+  REFUSED
+  PENDING
+}
+
+model Booking {
+  id               Int           @id @default(autoincrement())
+  public_id        String        @unique @default(uuid())
+  claimant_id      Int
+  claimant         User          @relation(fields: [claimant_id], references: [id])
+  parking_space_id Int
+  parking_space    ParkingSpace  @relation(fields: [parking_space_id], references: [id])
+  booked_at        DateTime      @default(now())
+  booked_from      DateTime
+  booked_to        DateTime
+  updated_at       DateTime      @updatedAt
+  status           BookingStatus @default(PENDING)
 }
