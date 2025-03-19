@@ -18,4 +18,11 @@ export class RegisterService {
       password: hashedPassword,
     });
   }
+
+  async getBuildingsByName(name: string) {
+    if (name.length >= 3) {
+      return await this.registerRepository.getBuildingsByName(name);
+    }
+    throw new Error('"name" should contain at least 3 characters');
+  }
 }

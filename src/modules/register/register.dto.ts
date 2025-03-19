@@ -36,3 +36,10 @@ export class CreateUserDTO {
   @MaxLength(50)
   password: string;
 }
+
+export class GetBuildingByNameQueryDTO {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  name: string;
+}

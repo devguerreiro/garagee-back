@@ -23,4 +23,15 @@ export class RegisterRepository {
       },
     });
   }
+
+  async getBuildingsByName(name: string) {
+    return this.prismaService.building.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
 }
