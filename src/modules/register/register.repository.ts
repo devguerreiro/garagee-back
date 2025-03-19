@@ -21,6 +21,10 @@ export class RegisterRepository {
         username: data.username,
         password: data.password,
       },
+      omit: {
+        id: true,
+        password: true,
+      },
     });
   }
 
@@ -31,6 +35,9 @@ export class RegisterRepository {
           contains: name,
           mode: 'insensitive',
         },
+      },
+      omit: {
+        id: true,
       },
     });
   }
