@@ -15,7 +15,7 @@ model User {
   username     String         @unique
   password     String
   created_at   DateTime       @default(now())
-  is_active    Boolean        @default(false)
+  is_active    Boolean        @default(true)
   building_id  Int
   building     Building       @relation(fields: [building_id], references: [id])
   ParkingSpace ParkingSpace[]
@@ -23,15 +23,11 @@ model User {
 }
 
 model Building {
-  id         Int     @id @default(autoincrement())
-  public_id  String  @unique @default(uuid())
-  name       String
-  cep        Int
-  address    String
-  complement String?
-  city       String
-  state      String
-  User       User[]
+  id        Int    @id @default(autoincrement())
+  public_id String @unique @default(uuid())
+  name      String
+  cnpj      String @unique
+  User      User[]
 }
 
 model ParkingSpace {

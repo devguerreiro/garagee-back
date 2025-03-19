@@ -10,7 +10,7 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "is_active" BOOLEAN NOT NULL DEFAULT false,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
     "building_id" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -21,11 +21,7 @@ CREATE TABLE "Building" (
     "id" SERIAL NOT NULL,
     "public_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "cep" INTEGER NOT NULL,
-    "address" TEXT NOT NULL,
-    "complement" TEXT,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
+    "cnpj" TEXT NOT NULL,
 
     CONSTRAINT "Building_pkey" PRIMARY KEY ("id")
 );
@@ -65,6 +61,9 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Building_public_id_key" ON "Building"("public_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Building_cnpj_key" ON "Building"("cnpj");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ParkingSpace_public_id_key" ON "ParkingSpace"("public_id");
