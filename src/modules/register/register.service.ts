@@ -2,6 +2,8 @@ import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
+import { toTitleCase } from 'src/utils';
+
 import { CreateUserDTO } from './register.dto';
 import { RegisterRepository } from './register.repository';
 
@@ -15,6 +17,7 @@ export class RegisterService {
     const hashedPassword = await bcrypt.hash(data.password, saltOrRounds);
     return await this.registerRepository.createUser({
       ...data,
+      name: toTitleCase(data.name),
       password: hashedPassword,
     });
   }
