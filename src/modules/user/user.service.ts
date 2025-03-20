@@ -9,4 +9,8 @@ export class UserService {
   async getByUsername(username: string) {
     return await this.userRepository.getByUsername(username);
   }
+
+  async getByPublicId(publicId: string) {
+    return await this.userRepository.getByPublicId(publicId);
+  }
 }

@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { RegisterModule } from './modules/register/register.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { ParkingSpaceModule } from './modules/parking-space/parking-space.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './modules/user/user.module';
     RegisterModule,
     AuthModule,
     UserModule,
+    ParkingSpaceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
