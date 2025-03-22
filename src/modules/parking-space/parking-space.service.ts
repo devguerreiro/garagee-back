@@ -8,9 +8,11 @@ export class ParkingSpaceService {
     private readonly parkingSpaceRepository: ParkingSpaceRepository,
   ) {}
 
-  async getParkingSpacesByBuilding(buildingId: number) {
-    return await this.parkingSpaceRepository.getParkingSpacesByBuilding(
-      buildingId,
-    );
+  async getParkingSpaces(buildingId: number) {
+    return await this.parkingSpaceRepository.getParkingSpaces(buildingId);
+  }
+
+  async getParkingSpaceDetail(publicId: string) {
+    return await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
   }
 }

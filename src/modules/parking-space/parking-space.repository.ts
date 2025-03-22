@@ -5,7 +5,7 @@ import { PrismaService } from 'nestjs-prisma';
 export class ParkingSpaceRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getParkingSpacesByBuilding(buildingId: number) {
+  async getParkingSpaces(buildingId: number) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
         owner: {
@@ -15,6 +15,33 @@ export class ParkingSpaceRepository {
       select: {
         public_id: true,
         identifier: true,
+        owner: {
+          select: {
+            public_id: true,
+            name: true,
+            apartment: true,
+            building: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getParkingSpaceDetail(publicId: string) {
+    return await this.prismaService.parkingSpace.findUnique({
+      where: {
+        public_id: publicId,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+        guidance: true,
+        is_covered: true,
         owner: {
           select: {
             public_id: true,
