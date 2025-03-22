@@ -32,4 +32,8 @@ export class ParkingSpaceService {
       is_blocked: false,
     });
   }
+
+  async deleteParkingSpace(publicId: string) {
+    return await this.parkingSpaceRepository.deleteParkingSpace(publicId);
+  }
 }

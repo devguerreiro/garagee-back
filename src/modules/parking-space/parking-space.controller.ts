@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -68,5 +69,11 @@ export class ParkingSpaceController {
   @Patch(':publicId/unblock')
   async unblockParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
     await this.parkingSpaceService.unblockParkingSpace(params.publicId);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':publicId')
+  async deleteParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
+    await this.parkingSpaceService.deleteParkingSpace(params.publicId);
   }
 }

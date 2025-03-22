@@ -12,6 +12,7 @@ export class ParkingSpaceRepository {
         owner: {
           building_id: buildingId,
         },
+        deleted_at: null,
       },
       select: {
         public_id: true,
@@ -34,9 +35,10 @@ export class ParkingSpaceRepository {
   }
 
   async getParkingSpaceDetail(publicId: string) {
-    return await this.prismaService.parkingSpace.findUnique({
+    return await this.prismaService.parkingSpace.findUniqueOrThrow({
       where: {
         public_id: publicId,
+        deleted_at: null,
       },
       select: {
         public_id: true,
@@ -69,6 +71,7 @@ export class ParkingSpaceRepository {
       data,
       where: {
         public_id: publicId,
+        deleted_at: null,
       },
       select: {
         public_id: true,
@@ -89,6 +92,18 @@ export class ParkingSpaceRepository {
             },
           },
         },
+      },
+    });
+  }
+
+  async deleteParkingSpace(publicId: string) {
+    await this.prismaService.parkingSpace.update({
+      data: {
+        deleted_at: new Date(),
+      },
+      where: {
+        public_id: publicId,
+        deleted_at: null,
       },
     });
   }
