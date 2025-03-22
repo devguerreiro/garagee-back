@@ -6,26 +6,29 @@ import { PrismaService } from 'nestjs-prisma';
 export class ParkingSpaceRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getParkingSpaces(buildingId: number) {
+  async getParkingSpacesByApartmentId(apartmentId: string) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
-        owner: {
-          building_id: buildingId,
-        },
+        apartment_id: apartmentId,
         deleted_at: null,
       },
       select: {
         public_id: true,
         identifier: true,
-        owner: {
+        apartment: {
           select: {
             public_id: true,
-            name: true,
-            apartment: true,
-            building: {
+            identifier: true,
+            tower: {
               select: {
                 public_id: true,
-                name: true,
+                identifier: true,
+                building: {
+                  select: {
+                    public_id: true,
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -46,16 +49,24 @@ export class ParkingSpaceRepository {
         guidance: true,
         is_covered: true,
         is_blocked: true,
-        owner: {
+        apartment: {
           select: {
             public_id: true,
-            name: true,
-            apartment: true,
-            building: {
+            identifier: true,
+            tower: {
               select: {
                 public_id: true,
-                name: true,
+                identifier: true,
+                building: {
+                  select: {
+                    public_id: true,
+                    name: true,
+                  },
+                },
               },
+            },
+            users: {
+              select: { public_id: true },
             },
           },
         },
@@ -79,15 +90,20 @@ export class ParkingSpaceRepository {
         guidance: true,
         is_covered: true,
         is_blocked: true,
-        owner: {
+        apartment: {
           select: {
             public_id: true,
-            name: true,
-            apartment: true,
-            building: {
+            identifier: true,
+            tower: {
               select: {
                 public_id: true,
-                name: true,
+                identifier: true,
+                building: {
+                  select: {
+                    public_id: true,
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -111,49 +127,35 @@ export class ParkingSpaceRepository {
   async getParkingSpacesByOwner(ownerPublicId: string) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
-        owner: {
-          public_id: ownerPublicId,
+        apartment: {
+          users: {
+            some: {
+              public_id: ownerPublicId,
+            },
+          },
         },
         deleted_at: null,
       },
       select: {
         public_id: true,
         identifier: true,
-        owner: {
-          select: {
-            public_id: true,
-            name: true,
-            apartment: true,
-            building: {
-              select: {
-                public_id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  async createParkingSpace(data: Prisma.ParkingSpaceCreateInput) {
-    return await this.prismaService.parkingSpace.create({
-      data,
-      select: {
-        public_id: true,
-        identifier: true,
         guidance: true,
         is_covered: true,
         is_blocked: true,
-        owner: {
+        apartment: {
           select: {
             public_id: true,
-            name: true,
-            apartment: true,
-            building: {
+            identifier: true,
+            tower: {
               select: {
                 public_id: true,
-                name: true,
+                identifier: true,
+                building: {
+                  select: {
+                    public_id: true,
+                    name: true,
+                  },
+                },
               },
             },
           },

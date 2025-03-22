@@ -11,18 +11,14 @@ export class RegisterRepository {
   async createUser(data: CreateUserDTO) {
     return await this.prismaService.user.create({
       data: {
-        name: data.name,
-        apartment: data.apartment,
-        building: {
+        ...data,
+        apartment: {
           connect: {
-            public_id: data.building,
+            public_id: data.apartment,
           },
         },
-        username: data.username,
-        password: data.password,
       },
       omit: {
-        id: true,
         password: true,
       },
     });
@@ -35,9 +31,6 @@ export class RegisterRepository {
           contains: name,
           mode: 'insensitive',
         },
-      },
-      omit: {
-        id: true,
       },
     });
   }

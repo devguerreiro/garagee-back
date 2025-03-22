@@ -15,14 +15,8 @@ export class CreateUserDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(15)
-  apartment: string;
-
-  @IsNotEmpty()
-  @IsString()
   @IsUUID()
-  building: string;
+  apartment: string;
 
   @IsNotEmpty()
   @IsString()

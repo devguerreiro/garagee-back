@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ParkingSpaceRepository } from './parking-space.repository';
-import {
-  CreateParkingSpaceDTO,
-  UpdateParkingSpaceDTO,
-} from './parking-space.dto';
+import { UpdateParkingSpaceDTO } from './parking-space.dto';
 
 @Injectable()
 export class ParkingSpaceService {
@@ -12,8 +9,10 @@ export class ParkingSpaceService {
     private readonly parkingSpaceRepository: ParkingSpaceRepository,
   ) {}
 
-  async getParkingSpaces(buildingId: number) {
-    return await this.parkingSpaceRepository.getParkingSpaces(buildingId);
+  async getParkingSpacesByApartmentId(apartmentId: string) {
+    return await this.parkingSpaceRepository.getParkingSpacesByApartmentId(
+      apartmentId,
+    );
   }
 
   async getParkingSpaceDetail(publicId: string) {
@@ -43,23 +42,14 @@ export class ParkingSpaceService {
   async isParkingSpaceOwner(publicId: string, userPublicId: string) {
     const parkingSpace =
       await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
-    return parkingSpace.owner.public_id === userPublicId;
+    return parkingSpace.apartment.users.some(
+      (user) => user.public_id === userPublicId,
+    );
   }
 
   async getParkingSpacesByOwner(ownerPublicId: string) {
     return await this.parkingSpaceRepository.getParkingSpacesByOwner(
       ownerPublicId,
     );
-  }
-
-  async createParkingSpace(ownerPublicId: string, data: CreateParkingSpaceDTO) {
-    return await this.parkingSpaceRepository.createParkingSpace({
-      ...data,
-      owner: {
-        connect: {
-          public_id: ownerPublicId,
-        },
-      },
-    });
   }
 }
