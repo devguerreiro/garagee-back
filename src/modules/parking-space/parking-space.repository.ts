@@ -107,4 +107,32 @@ export class ParkingSpaceRepository {
       },
     });
   }
+
+  async getParkingSpacesByOwner(ownerPublicId: string) {
+    return await this.prismaService.parkingSpace.findMany({
+      where: {
+        owner: {
+          public_id: ownerPublicId,
+        },
+        deleted_at: null,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+        owner: {
+          select: {
+            public_id: true,
+            name: true,
+            apartment: true,
+            building: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

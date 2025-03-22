@@ -42,4 +42,10 @@ export class ParkingSpaceService {
       await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
     return parkingSpace.owner.public_id === userPublicId;
   }
+
+  async getParkingSpacesByOwner(ownerPublicId: string) {
+    return await this.parkingSpaceRepository.getParkingSpacesByOwner(
+      ownerPublicId,
+    );
+  }
 }

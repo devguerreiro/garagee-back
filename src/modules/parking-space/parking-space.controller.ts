@@ -41,6 +41,13 @@ export class ParkingSpaceController {
     throw new UnauthorizedException();
   }
 
+  @Get('my')
+  async getMyParkingSpaces(@Req() request: AuthenticatedRequest) {
+    return await this.parkingSpaceService.getParkingSpacesByOwner(
+      request.user.sub,
+    );
+  }
+
   @Get(':publicId')
   async getParkingSpaceDetail(@Param() params: ParkingSpaceDetailParamsDTO) {
     return await this.parkingSpaceService.getParkingSpaceDetail(
