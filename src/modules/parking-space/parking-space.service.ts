@@ -22,18 +22,24 @@ export class ParkingSpaceService {
   }
 
   async blockParkingSpace(publicId: string) {
-    return await this.parkingSpaceRepository.updateParkingSpace(publicId, {
+    await this.parkingSpaceRepository.updateParkingSpace(publicId, {
       is_blocked: true,
     });
   }
 
   async unblockParkingSpace(publicId: string) {
-    return await this.parkingSpaceRepository.updateParkingSpace(publicId, {
+    await this.parkingSpaceRepository.updateParkingSpace(publicId, {
       is_blocked: false,
     });
   }
 
   async deleteParkingSpace(publicId: string) {
-    return await this.parkingSpaceRepository.deleteParkingSpace(publicId);
+    await this.parkingSpaceRepository.deleteParkingSpace(publicId);
+  }
+
+  async isParkingSpaceOwner(publicId: string, userPublicId: string) {
+    const parkingSpace =
+      await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
+    return parkingSpace.owner.public_id === userPublicId;
   }
 }

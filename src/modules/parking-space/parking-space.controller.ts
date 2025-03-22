@@ -50,30 +50,70 @@ export class ParkingSpaceController {
 
   @Patch(':publicId')
   async updateParkingSpace(
+    @Req() request: AuthenticatedRequest,
     @Param() params: ParkingSpaceDetailParamsDTO,
     @Body() data: ParkingSpaceUpdateDTO,
   ) {
-    return await this.parkingSpaceService.updateParkingSpace(
+    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
       params.publicId,
-      data,
+      request.user.sub,
     );
+    if (isOwner) {
+      return await this.parkingSpaceService.updateParkingSpace(
+        params.publicId,
+        data,
+      );
+    }
+    throw new UnauthorizedException();
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/block')
-  async blockParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
-    await this.parkingSpaceService.blockParkingSpace(params.publicId);
+  async blockParkingSpace(
+    @Req() request: AuthenticatedRequest,
+    @Param() params: ParkingSpaceDetailParamsDTO,
+  ) {
+    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
+      params.publicId,
+      request.user.sub,
+    );
+    if (isOwner) {
+      return await this.parkingSpaceService.blockParkingSpace(params.publicId);
+    }
+    throw new UnauthorizedException();
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/unblock')
-  async unblockParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
-    await this.parkingSpaceService.unblockParkingSpace(params.publicId);
+  async unblockParkingSpace(
+    @Req() request: AuthenticatedRequest,
+    @Param() params: ParkingSpaceDetailParamsDTO,
+  ) {
+    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
+      params.publicId,
+      request.user.sub,
+    );
+    if (isOwner) {
+      return await this.parkingSpaceService.unblockParkingSpace(
+        params.publicId,
+      );
+    }
+    throw new UnauthorizedException();
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':publicId')
-  async deleteParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
-    await this.parkingSpaceService.deleteParkingSpace(params.publicId);
+  async deleteParkingSpace(
+    @Req() request: AuthenticatedRequest,
+    @Param() params: ParkingSpaceDetailParamsDTO,
+  ) {
+    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
+      params.publicId,
+      request.user.sub,
+    );
+    if (isOwner) {
+      return await this.parkingSpaceService.deleteParkingSpace(params.publicId);
+    }
+    throw new UnauthorizedException();
   }
 }
