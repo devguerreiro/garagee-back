@@ -135,4 +135,30 @@ export class ParkingSpaceRepository {
       },
     });
   }
+
+  async createParkingSpace(data: Prisma.ParkingSpaceCreateInput) {
+    return await this.prismaService.parkingSpace.create({
+      data,
+      select: {
+        public_id: true,
+        identifier: true,
+        guidance: true,
+        is_covered: true,
+        is_blocked: true,
+        owner: {
+          select: {
+            public_id: true,
+            name: true,
+            apartment: true,
+            building: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

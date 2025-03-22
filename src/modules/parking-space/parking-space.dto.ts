@@ -14,7 +14,25 @@ export class ParkingSpaceDetailParamsDTO {
   publicId: string;
 }
 
-export class ParkingSpaceUpdateDTO {
+export class UpdateParkingSpaceDTO {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(5)
+  identifier: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(15)
+  @MaxLength(100)
+  guidance: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  is_covered: boolean;
+}
+
+export class CreateParkingSpaceDTO {
   @IsNotEmpty()
   @IsString()
   @MinLength(1)

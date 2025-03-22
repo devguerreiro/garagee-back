@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Post,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -20,8 +21,9 @@ import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
 import {
+  CreateParkingSpaceDTO,
   ParkingSpaceDetailParamsDTO,
-  ParkingSpaceUpdateDTO,
+  UpdateParkingSpaceDTO,
 } from './parking-space.dto';
 
 @UseGuards(AuthGuard)
@@ -48,6 +50,17 @@ export class ParkingSpaceController {
     );
   }
 
+  @Post()
+  async createParkingSpace(
+    @Req() request: AuthenticatedRequest,
+    @Body() data: CreateParkingSpaceDTO,
+  ) {
+    return await this.parkingSpaceService.createParkingSpace(
+      request.user.sub,
+      data,
+    );
+  }
+
   @Get(':publicId')
   async getParkingSpaceDetail(@Param() params: ParkingSpaceDetailParamsDTO) {
     return await this.parkingSpaceService.getParkingSpaceDetail(
@@ -59,7 +72,7 @@ export class ParkingSpaceController {
   async updateParkingSpace(
     @Req() request: AuthenticatedRequest,
     @Param() params: ParkingSpaceDetailParamsDTO,
-    @Body() data: ParkingSpaceUpdateDTO,
+    @Body() data: UpdateParkingSpaceDTO,
   ) {
     const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
       params.publicId,
