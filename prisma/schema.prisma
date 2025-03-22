@@ -7,40 +7,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Building {
+  public_id String  @id @unique @default(uuid())
+  name      String
+  cnpj      String  @unique
+  towers    Tower[]
+}
+
+model Tower {
+  public_id   String      @id @unique @default(uuid())
+  identifier  String
+  building_id String
+  building    Building    @relation(fields: [building_id], references: [public_id])
+  apartments  Apartment[]
+}
+
+model Apartment {
+  public_id     String         @id @unique @default(uuid())
+  identifier    String
+  tower_id      String
+  tower         Tower          @relation(fields: [tower_id], references: [public_id])
+  parkingSpaces ParkingSpace[]
+  users         User[]
+}
+
 model User {
-  id           Int            @id @default(autoincrement())
-  public_id    String         @unique @default(uuid())
+  public_id    String    @id @unique @default(uuid())
   name         String
-  apartment    String
-  username     String         @unique
+  username     String    @unique
   password     String
-  created_at   DateTime       @default(now())
-  is_active    Boolean        @default(true)
-  building_id  Int
-  building     Building       @relation(fields: [building_id], references: [id])
-  ParkingSpace ParkingSpace[]
+  created_at   DateTime  @default(now())
+  is_active    Boolean   @default(true)
+  apartment_id String
+  apartment    Apartment @relation(fields: [apartment_id], references: [public_id])
   Booking      Booking[]
 }
 
-model Building {
-  id        Int    @id @default(autoincrement())
-  public_id String @unique @default(uuid())
-  name      String
-  cnpj      String @unique
-  User      User[]
-}
-
 model ParkingSpace {
-  id         Int       @id @default(autoincrement())
-  public_id  String    @unique @default(uuid())
-  identifier String
-  guidance   String
-  is_covered Boolean
-  is_blocked Boolean   @default(false)
-  deleted_at DateTime?
-  owner_id   Int
-  owner      User      @relation(fields: [owner_id], references: [id])
-  Booking    Booking[]
+  public_id    String    @id @unique @default(uuid())
+  identifier   String
+  guidance     String
+  is_covered   Boolean
+  is_blocked   Boolean   @default(false)
+  deleted_at   DateTime?
+  apartment_id String
+  apartment    Apartment @relation(fields: [apartment_id], references: [public_id])
+  bookings     Booking[]
 }
 
 enum BookingStatus {
@@ -50,12 +62,11 @@ enum BookingStatus {
 }
 
 model Booking {
-  id               Int           @id @default(autoincrement())
-  public_id        String        @unique @default(uuid())
-  claimant_id      Int
-  claimant         User          @relation(fields: [claimant_id], references: [id])
-  parking_space_id Int
-  parking_space    ParkingSpace  @relation(fields: [parking_space_id], references: [id])
+  public_id        String        @id @unique @default(uuid())
+  claimant_id      String
+  claimant         User          @relation(fields: [claimant_id], references: [public_id])
+  parking_space_id String
+  parking_space    ParkingSpace  @relation(fields: [parking_space_id], references: [public_id])
   booked_at        DateTime      @default(now())
   booked_from      DateTime
   booked_to        DateTime
