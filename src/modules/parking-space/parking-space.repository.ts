@@ -43,6 +43,7 @@ export class ParkingSpaceRepository {
         identifier: true,
         guidance: true,
         is_covered: true,
+        is_blocked: true,
         owner: {
           select: {
             public_id: true,
@@ -60,7 +61,7 @@ export class ParkingSpaceRepository {
     });
   }
 
-  async updateParkingSpaceDetail(
+  async updateParkingSpace(
     publicId: string,
     data: Prisma.ParkingSpaceUpdateInput,
   ) {
@@ -74,6 +75,7 @@ export class ParkingSpaceRepository {
         identifier: true,
         guidance: true,
         is_covered: true,
+        is_blocked: true,
         owner: {
           select: {
             public_id: true,

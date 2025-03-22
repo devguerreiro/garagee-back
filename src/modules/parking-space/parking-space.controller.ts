@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Req,
@@ -54,5 +56,17 @@ export class ParkingSpaceController {
       params.publicId,
       data,
     );
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':publicId/block')
+  async blockParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
+    await this.parkingSpaceService.blockParkingSpace(params.publicId);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':publicId/unblock')
+  async unblockParkingSpace(@Param() params: ParkingSpaceDetailParamsDTO) {
+    await this.parkingSpaceService.unblockParkingSpace(params.publicId);
   }
 }

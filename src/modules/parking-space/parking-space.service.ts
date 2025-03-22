@@ -18,9 +18,18 @@ export class ParkingSpaceService {
   }
 
   async updateParkingSpace(publicId: string, data: ParkingSpaceUpdateDTO) {
-    return await this.parkingSpaceRepository.updateParkingSpaceDetail(
-      publicId,
-      data,
-    );
+    return await this.parkingSpaceRepository.updateParkingSpace(publicId, data);
+  }
+
+  async blockParkingSpace(publicId: string) {
+    return await this.parkingSpaceRepository.updateParkingSpace(publicId, {
+      is_blocked: true,
+    });
+  }
+
+  async unblockParkingSpace(publicId: string) {
+    return await this.parkingSpaceRepository.updateParkingSpace(publicId, {
+      is_blocked: false,
+    });
   }
 }
