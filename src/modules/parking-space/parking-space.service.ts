@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ParkingSpaceRepository } from './parking-space.repository';
+import { ParkingSpaceUpdateDTO } from './parking-space.dto';
 
 @Injectable()
 export class ParkingSpaceService {
@@ -14,5 +15,12 @@ export class ParkingSpaceService {
 
   async getParkingSpaceDetail(publicId: string) {
     return await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
+  }
+
+  async updateParkingSpace(publicId: string, data: ParkingSpaceUpdateDTO) {
+    return await this.parkingSpaceRepository.updateParkingSpaceDetail(
+      publicId,
+      data,
+    );
   }
 }

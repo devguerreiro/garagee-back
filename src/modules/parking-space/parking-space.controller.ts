@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
+  Patch,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -14,7 +16,10 @@ import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
-import { ParkingSpaceDetailParamsDTO } from './parking-space.dto';
+import {
+  ParkingSpaceDetailParamsDTO,
+  ParkingSpaceUpdateDTO,
+} from './parking-space.dto';
 
 @UseGuards(AuthGuard)
 @Controller('parking-space')
@@ -37,6 +42,17 @@ export class ParkingSpaceController {
   async getParkingSpaceDetail(@Param() params: ParkingSpaceDetailParamsDTO) {
     return await this.parkingSpaceService.getParkingSpaceDetail(
       params.publicId,
+    );
+  }
+
+  @Patch(':publicId')
+  async updateParkingSpace(
+    @Param() params: ParkingSpaceDetailParamsDTO,
+    @Body() data: ParkingSpaceUpdateDTO,
+  ) {
+    return await this.parkingSpaceService.updateParkingSpace(
+      params.publicId,
+      data,
     );
   }
 }
