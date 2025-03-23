@@ -1,7 +1,5 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -19,10 +17,7 @@ import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
-import {
-  ParkingSpaceDetailParamsDTO,
-  UpdateParkingSpaceDTO,
-} from './parking-space.dto';
+import { ParkingSpaceDetailParamsDTO } from './parking-space.dto';
 
 @UseGuards(AuthGuard)
 @Controller('parking-space')
@@ -57,25 +52,6 @@ export class ParkingSpaceController {
     );
   }
 
-  @Patch(':publicId')
-  async updateParkingSpace(
-    @Req() request: AuthenticatedRequest,
-    @Param() params: ParkingSpaceDetailParamsDTO,
-    @Body() data: UpdateParkingSpaceDTO,
-  ) {
-    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
-      params.publicId,
-      request.user.sub,
-    );
-    if (isOwner) {
-      return await this.parkingSpaceService.updateParkingSpace(
-        params.publicId,
-        data,
-      );
-    }
-    throw new UnauthorizedException();
-  }
-
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/block')
   async blockParkingSpace(
@@ -106,22 +82,6 @@ export class ParkingSpaceController {
       return await this.parkingSpaceService.unblockParkingSpace(
         params.publicId,
       );
-    }
-    throw new UnauthorizedException();
-  }
-
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':publicId')
-  async deleteParkingSpace(
-    @Req() request: AuthenticatedRequest,
-    @Param() params: ParkingSpaceDetailParamsDTO,
-  ) {
-    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
-      params.publicId,
-      request.user.sub,
-    );
-    if (isOwner) {
-      return await this.parkingSpaceService.deleteParkingSpace(params.publicId);
     }
     throw new UnauthorizedException();
   }

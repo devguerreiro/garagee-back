@@ -112,18 +112,6 @@ export class ParkingSpaceRepository {
     });
   }
 
-  async deleteParkingSpace(publicId: string) {
-    await this.prismaService.parkingSpace.update({
-      data: {
-        deleted_at: new Date(),
-      },
-      where: {
-        public_id: publicId,
-        deleted_at: null,
-      },
-    });
-  }
-
   async getParkingSpacesByOwner(ownerPublicId: string) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
