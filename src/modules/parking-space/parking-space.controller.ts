@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Query,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -17,7 +18,10 @@ import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
-import { ParkingSpaceDetailParamDTO } from './parking-space.dto';
+import {
+  ParkingSpaceDetailParamDTO,
+  ParkingSpacesQueryDTO,
+} from './parking-space.dto';
 
 @UseGuards(AuthGuard)
 @Controller('parking-space')
@@ -28,19 +32,25 @@ export class ParkingSpaceController {
   ) {}
 
   @Get()
-  async getParkingSpaces(@Req() request: AuthenticatedRequest) {
+  async getParkingSpaces(
+    @Req() request: AuthenticatedRequest,
+    @Query() query: ParkingSpacesQueryDTO,
+  ) {
     const user = await this.userService.getByPublicId(request.user.sub);
     if (user) {
       return await this.parkingSpaceService.getParkingSpacesByApartment(
         user.apartment_id,
+        query.isCovered === undefined
+          ? query.isCovered
+          : (eval(query.isCovered) as boolean),
       );
     }
     throw new UnauthorizedException();
   }
 
   @Get('my')
-  async getMyParkingSpaces(@Req() request: AuthenticatedRequest) {
-    return await this.parkingSpaceService.getParkingSpacesByOccupant(
+  async getMyParkingSpace(@Req() request: AuthenticatedRequest) {
+    return await this.parkingSpaceService.getParkingSpaceByOccupant(
       request.user.sub,
     );
   }

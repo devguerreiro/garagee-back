@@ -23,12 +23,12 @@ model Tower {
 }
 
 model Apartment {
-  public_id     String         @id @unique @default(uuid())
-  identifier    String
-  tower_id      String
-  tower         Tower          @relation(fields: [tower_id], references: [public_id])
-  parkingSpaces ParkingSpace[]
-  occupant      User?
+  public_id    String        @id @unique @default(uuid())
+  identifier   String
+  tower_id     String
+  tower        Tower         @relation(fields: [tower_id], references: [public_id])
+  occupant     User?
+  parkingSpace ParkingSpace?
 }
 
 model User {
@@ -49,8 +49,7 @@ model ParkingSpace {
   guidance     String
   is_covered   Boolean
   is_blocked   Boolean   @default(false)
-  deleted_at   DateTime?
-  apartment_id String
+  apartment_id String    @unique
   apartment    Apartment @relation(fields: [apartment_id], references: [public_id])
   bookings     Booking[]
 }

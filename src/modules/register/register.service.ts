@@ -24,16 +24,25 @@ export class RegisterService {
 
   async getBuildingsByName(name: string) {
     if (name.length >= 3) {
-      return await this.registerRepository.getBuildingsByName(name);
+      return await this.registerRepository.getBuildings({
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      });
     }
     throw new Error('"name" should contain at least 3 characters');
   }
 
   async getTowersByBuilding(buildingPublicId: string) {
-    return await this.registerRepository.getTowersByBuilding(buildingPublicId);
+    return await this.registerRepository.getTowers({
+      building_id: buildingPublicId,
+    });
   }
 
   async getApartmentsByTower(towerPublicId: string) {
-    return await this.registerRepository.getApartmentsByTower(towerPublicId);
+    return await this.registerRepository.getApartments({
+      tower_id: towerPublicId,
+    });
   }
 }

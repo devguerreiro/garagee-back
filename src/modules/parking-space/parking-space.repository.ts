@@ -6,12 +6,9 @@ import { PrismaService } from 'nestjs-prisma';
 export class ParkingSpaceRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getParkingSpacesByApartment(apartmentPublicId: string) {
+  async getParkingSpaces(where: Prisma.ParkingSpaceWhereInput) {
     return await this.prismaService.parkingSpace.findMany({
-      where: {
-        apartment_id: apartmentPublicId,
-        deleted_at: null,
-      },
+      where,
       select: {
         public_id: true,
         identifier: true,
@@ -43,12 +40,9 @@ export class ParkingSpaceRepository {
     });
   }
 
-  async getParkingSpaceDetail(publicId: string) {
+  async getParkingSpace(where: Prisma.ParkingSpaceWhereUniqueInput) {
     return await this.prismaService.parkingSpace.findUniqueOrThrow({
-      where: {
-        public_id: publicId,
-        deleted_at: null,
-      },
+      where,
       select: {
         public_id: true,
         identifier: true,
@@ -84,15 +78,12 @@ export class ParkingSpaceRepository {
   }
 
   async updateParkingSpace(
-    publicId: string,
     data: Prisma.ParkingSpaceUpdateInput,
+    where: Prisma.ParkingSpaceWhereUniqueInput,
   ) {
     return await this.prismaService.parkingSpace.update({
       data,
-      where: {
-        public_id: publicId,
-        deleted_at: null,
-      },
+      where,
       select: {
         public_id: true,
         identifier: true,
@@ -127,16 +118,9 @@ export class ParkingSpaceRepository {
     });
   }
 
-  async getParkingSpacesByOccupant(occupantPublicId: string) {
-    return await this.prismaService.parkingSpace.findMany({
-      where: {
-        apartment: {
-          occupant: {
-            public_id: occupantPublicId,
-          },
-        },
-        deleted_at: null,
-      },
+  async getFirstParkingSpace(where: Prisma.ParkingSpaceWhereInput) {
+    return await this.prismaService.parkingSpace.findFirstOrThrow({
+      where,
       select: {
         public_id: true,
         identifier: true,

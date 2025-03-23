@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from 'nestjs-prisma';
 
@@ -24,22 +25,15 @@ export class RegisterRepository {
     });
   }
 
-  async getBuildingsByName(name: string) {
+  async getBuildings(where: Prisma.BuildingWhereInput) {
     return this.prismaService.building.findMany({
-      where: {
-        name: {
-          contains: name,
-          mode: 'insensitive',
-        },
-      },
+      where,
     });
   }
 
-  async getTowersByBuilding(buildingPublicId: string) {
+  async getTowers(where: Prisma.TowerWhereInput) {
     return this.prismaService.tower.findMany({
-      where: {
-        building_id: buildingPublicId,
-      },
+      where,
       select: {
         public_id: true,
         identifier: true,
@@ -47,11 +41,9 @@ export class RegisterRepository {
     });
   }
 
-  async getApartmentsByTower(towerPublicId: string) {
+  async getApartments(where: Prisma.ApartmentWhereInput) {
     return this.prismaService.apartment.findMany({
-      where: {
-        tower_id: towerPublicId,
-      },
+      where,
       select: {
         public_id: true,
         identifier: true,
