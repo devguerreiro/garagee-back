@@ -9,6 +9,7 @@ import { RegisterModule } from './modules/register/register.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ParkingSpaceModule } from './modules/parking-space/parking-space.module';
+import { BookingModule } from './modules/booking/booking.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ParkingSpaceModule } from './modules/parking-space/parking-space.module
     AuthModule,
     UserModule,
     ParkingSpaceModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

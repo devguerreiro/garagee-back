@@ -14,15 +14,11 @@ export class ParkingSpaceRepository {
         identifier: true,
         apartment: {
           select: {
-            public_id: true,
             identifier: true,
             tower: {
               select: {
-                public_id: true,
-                identifier: true,
                 building: {
                   select: {
-                    public_id: true,
                     name: true,
                   },
                 },
@@ -30,7 +26,6 @@ export class ParkingSpaceRepository {
             },
             occupant: {
               select: {
-                public_id: true,
                 name: true,
               },
             },
@@ -44,22 +39,16 @@ export class ParkingSpaceRepository {
     return await this.prismaService.parkingSpace.findUniqueOrThrow({
       where,
       select: {
-        public_id: true,
         identifier: true,
         guidance: true,
         is_covered: true,
-        is_blocked: true,
         apartment: {
           select: {
-            public_id: true,
             identifier: true,
             tower: {
               select: {
-                public_id: true,
-                identifier: true,
                 building: {
                   select: {
-                    public_id: true,
                     name: true,
                   },
                 },
@@ -85,22 +74,16 @@ export class ParkingSpaceRepository {
       data,
       where,
       select: {
-        public_id: true,
         identifier: true,
         guidance: true,
         is_covered: true,
-        is_blocked: true,
         apartment: {
           select: {
-            public_id: true,
             identifier: true,
             tower: {
               select: {
-                public_id: true,
-                identifier: true,
                 building: {
                   select: {
-                    public_id: true,
                     name: true,
                   },
                 },
@@ -124,20 +107,13 @@ export class ParkingSpaceRepository {
       select: {
         public_id: true,
         identifier: true,
-        guidance: true,
-        is_covered: true,
-        is_blocked: true,
         apartment: {
           select: {
-            public_id: true,
             identifier: true,
             tower: {
               select: {
-                public_id: true,
-                identifier: true,
                 building: {
                   select: {
-                    public_id: true,
                     name: true,
                   },
                 },
@@ -145,7 +121,6 @@ export class ParkingSpaceRepository {
             },
             occupant: {
               select: {
-                public_id: true,
                 name: true,
               },
             },
