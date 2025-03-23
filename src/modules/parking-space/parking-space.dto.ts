@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class ParkingSpaceDetailParamsDTO {
+export class ParkingSpaceDetailParamDTO {
   @IsNotEmpty()
   @IsString()
   @IsUUID()

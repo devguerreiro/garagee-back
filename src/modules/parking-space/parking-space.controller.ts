@@ -17,7 +17,7 @@ import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
-import { ParkingSpaceDetailParamsDTO } from './parking-space.dto';
+import { ParkingSpaceDetailParamDTO } from './parking-space.dto';
 
 @UseGuards(AuthGuard)
 @Controller('parking-space')
@@ -46,24 +46,22 @@ export class ParkingSpaceController {
   }
 
   @Get(':publicId')
-  async getParkingSpaceDetail(@Param() params: ParkingSpaceDetailParamsDTO) {
-    return await this.parkingSpaceService.getParkingSpaceDetail(
-      params.publicId,
-    );
+  async getParkingSpaceDetail(@Param() param: ParkingSpaceDetailParamDTO) {
+    return await this.parkingSpaceService.getParkingSpaceDetail(param.publicId);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/block')
   async blockParkingSpace(
     @Req() request: AuthenticatedRequest,
-    @Param() params: ParkingSpaceDetailParamsDTO,
+    @Param() param: ParkingSpaceDetailParamDTO,
   ) {
     const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
-      params.publicId,
+      param.publicId,
       request.user.sub,
     );
     if (isOwner) {
-      return await this.parkingSpaceService.blockParkingSpace(params.publicId);
+      return await this.parkingSpaceService.blockParkingSpace(param.publicId);
     }
     throw new UnauthorizedException();
   }
@@ -72,16 +70,14 @@ export class ParkingSpaceController {
   @Patch(':publicId/unblock')
   async unblockParkingSpace(
     @Req() request: AuthenticatedRequest,
-    @Param() params: ParkingSpaceDetailParamsDTO,
+    @Param() param: ParkingSpaceDetailParamDTO,
   ) {
     const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
-      params.publicId,
+      param.publicId,
       request.user.sub,
     );
     if (isOwner) {
-      return await this.parkingSpaceService.unblockParkingSpace(
-        params.publicId,
-      );
+      return await this.parkingSpaceService.unblockParkingSpace(param.publicId);
     }
     throw new UnauthorizedException();
   }
