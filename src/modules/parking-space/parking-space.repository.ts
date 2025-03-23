@@ -6,10 +6,10 @@ import { PrismaService } from 'nestjs-prisma';
 export class ParkingSpaceRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getParkingSpacesByApartmentId(apartmentId: string) {
+  async getParkingSpacesByApartment(apartmentPublicId: string) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
-        apartment_id: apartmentId,
+        apartment_id: apartmentPublicId,
         deleted_at: null,
       },
       select: {

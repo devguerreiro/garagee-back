@@ -31,7 +31,7 @@ export class ParkingSpaceController {
   async getParkingSpaces(@Req() request: AuthenticatedRequest) {
     const user = await this.userService.getByPublicId(request.user.sub);
     if (user) {
-      return await this.parkingSpaceService.getParkingSpacesByApartmentId(
+      return await this.parkingSpaceService.getParkingSpacesByApartment(
         user.apartment_id,
       );
     }

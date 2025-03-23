@@ -37,3 +37,17 @@ export class GetBuildingByNameQueryDTO {
   @MinLength(3)
   name: string;
 }
+
+export class GetTowersByBuildingQueryDTO {
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  building: string;
+}
+
+export class GetApartmentsByTowerQueryDTO {
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  tower: string;
+}

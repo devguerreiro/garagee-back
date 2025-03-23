@@ -28,4 +28,12 @@ export class RegisterService {
     }
     throw new Error('"name" should contain at least 3 characters');
   }
+
+  async getTowersByBuilding(buildingPublicId: string) {
+    return await this.registerRepository.getTowersByBuilding(buildingPublicId);
+  }
+
+  async getApartmentsByTower(towerPublicId: string) {
+    return await this.registerRepository.getApartmentsByTower(towerPublicId);
+  }
 }

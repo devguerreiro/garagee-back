@@ -8,9 +8,9 @@ export class ParkingSpaceService {
     private readonly parkingSpaceRepository: ParkingSpaceRepository,
   ) {}
 
-  async getParkingSpacesByApartmentId(apartmentId: string) {
-    return await this.parkingSpaceRepository.getParkingSpacesByApartmentId(
-      apartmentId,
+  async getParkingSpacesByApartment(apartmentPublicId: string) {
+    return await this.parkingSpaceRepository.getParkingSpacesByApartment(
+      apartmentPublicId,
     );
   }
 

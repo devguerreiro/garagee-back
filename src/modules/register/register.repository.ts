@@ -34,4 +34,28 @@ export class RegisterRepository {
       },
     });
   }
+
+  async getTowersByBuilding(buildingPublicId: string) {
+    return this.prismaService.tower.findMany({
+      where: {
+        building_id: buildingPublicId,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+      },
+    });
+  }
+
+  async getApartmentsByTower(towerPublicId: string) {
+    return this.prismaService.apartment.findMany({
+      where: {
+        tower_id: towerPublicId,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+      },
+    });
+  }
 }
