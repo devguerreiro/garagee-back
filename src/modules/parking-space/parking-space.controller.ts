@@ -40,7 +40,7 @@ export class ParkingSpaceController {
 
   @Get('my')
   async getMyParkingSpaces(@Req() request: AuthenticatedRequest) {
-    return await this.parkingSpaceService.getParkingSpacesByOwner(
+    return await this.parkingSpaceService.getParkingSpacesByOccupant(
       request.user.sub,
     );
   }
@@ -56,11 +56,11 @@ export class ParkingSpaceController {
     @Req() request: AuthenticatedRequest,
     @Param() param: ParkingSpaceDetailParamDTO,
   ) {
-    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
+    const isOccupant = await this.parkingSpaceService.isParkingSpaceOccupant(
       param.publicId,
       request.user.sub,
     );
-    if (isOwner) {
+    if (isOccupant) {
       return await this.parkingSpaceService.blockParkingSpace(param.publicId);
     }
     throw new UnauthorizedException();
@@ -72,11 +72,11 @@ export class ParkingSpaceController {
     @Req() request: AuthenticatedRequest,
     @Param() param: ParkingSpaceDetailParamDTO,
   ) {
-    const isOwner = await this.parkingSpaceService.isParkingSpaceOwner(
+    const isOccupant = await this.parkingSpaceService.isParkingSpaceOccupant(
       param.publicId,
       request.user.sub,
     );
-    if (isOwner) {
+    if (isOccupant) {
       return await this.parkingSpaceService.unblockParkingSpace(param.publicId);
     }
     throw new UnauthorizedException();

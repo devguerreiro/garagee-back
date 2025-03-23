@@ -28,7 +28,7 @@ model Apartment {
   tower_id      String
   tower         Tower          @relation(fields: [tower_id], references: [public_id])
   parkingSpaces ParkingSpace[]
-  users         User[]
+  occupant      User?
 }
 
 model User {
@@ -38,7 +38,7 @@ model User {
   password     String
   created_at   DateTime  @default(now())
   is_active    Boolean   @default(true)
-  apartment_id String
+  apartment_id String    @unique
   apartment    Apartment @relation(fields: [apartment_id], references: [public_id])
   Booking      Booking[]
 }

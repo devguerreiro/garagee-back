@@ -30,17 +30,16 @@ export class ParkingSpaceService {
     });
   }
 
-  async isParkingSpaceOwner(publicId: string, userPublicId: string) {
+  async isParkingSpaceOccupant(publicId: string, userPublicId: string) {
     const parkingSpace =
       await this.parkingSpaceRepository.getParkingSpaceDetail(publicId);
-    return parkingSpace.apartment.users.some(
-      (user) => user.public_id === userPublicId,
-    );
+    const occupant = parkingSpace.apartment.occupant;
+    return occupant && occupant.public_id === userPublicId;
   }
 
-  async getParkingSpacesByOwner(ownerPublicId: string) {
-    return await this.parkingSpaceRepository.getParkingSpacesByOwner(
-      ownerPublicId,
+  async getParkingSpacesByOccupant(occupantPublicId: string) {
+    return await this.parkingSpaceRepository.getParkingSpacesByOccupant(
+      occupantPublicId,
     );
   }
 }

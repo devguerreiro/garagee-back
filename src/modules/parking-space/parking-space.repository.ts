@@ -31,6 +31,12 @@ export class ParkingSpaceRepository {
                 },
               },
             },
+            occupant: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -65,8 +71,11 @@ export class ParkingSpaceRepository {
                 },
               },
             },
-            users: {
-              select: { public_id: true },
+            occupant: {
+              select: {
+                public_id: true,
+                name: true,
+              },
             },
           },
         },
@@ -106,20 +115,24 @@ export class ParkingSpaceRepository {
                 },
               },
             },
+            occupant: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
           },
         },
       },
     });
   }
 
-  async getParkingSpacesByOwner(ownerPublicId: string) {
+  async getParkingSpacesByOccupant(occupantPublicId: string) {
     return await this.prismaService.parkingSpace.findMany({
       where: {
         apartment: {
-          users: {
-            some: {
-              public_id: ownerPublicId,
-            },
+          occupant: {
+            public_id: occupantPublicId,
           },
         },
         deleted_at: null,
@@ -144,6 +157,12 @@ export class ParkingSpaceRepository {
                     name: true,
                   },
                 },
+              },
+            },
+            occupant: {
+              select: {
+                public_id: true,
+                name: true,
               },
             },
           },
