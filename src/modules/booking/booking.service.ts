@@ -20,4 +20,22 @@ export class BookingService {
       public_id: publicId,
     });
   }
+
+  async revokeBooking(publicId: string) {
+    return await this.bookingRepository.update(publicId, {
+      status: BookingStatus.REVOKED,
+    });
+  }
+
+  async approveBooking(publicId: string) {
+    return await this.bookingRepository.update(publicId, {
+      status: BookingStatus.APPROVED,
+    });
+  }
+
+  async refuseBooking(publicId: string) {
+    return await this.bookingRepository.update(publicId, {
+      status: BookingStatus.REFUSED,
+    });
+  }
 }

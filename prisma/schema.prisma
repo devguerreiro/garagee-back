@@ -55,9 +55,10 @@ model ParkingSpace {
 }
 
 enum BookingStatus {
+  PENDING
   APPROVED
   REFUSED
-  PENDING
+  REVOKED
 }
 
 model Booking {

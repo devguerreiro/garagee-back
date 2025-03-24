@@ -65,4 +65,11 @@ export class BookingRepository {
       },
     });
   }
+
+  async update(publicId: string, data: Prisma.BookingUpdateInput) {
+    return await this.prismaService.booking.update({
+      data,
+      where: { public_id: publicId },
+    });
+  }
 }

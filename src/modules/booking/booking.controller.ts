@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AuthenticatedRequest } from 'src/types';
 
@@ -29,5 +39,23 @@ export class BookingController {
   @Get(':publicId')
   async getBookingDetail(@Param() param: BookingDetailParamDTO) {
     return await this.bookingService.getBookingDetail(param.publicId);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':publicId/revoke')
+  async revokeBooking(@Param() param: BookingDetailParamDTO) {
+    await this.bookingService.revokeBooking(param.publicId);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':publicId/approve')
+  async approveBooking(@Param() param: BookingDetailParamDTO) {
+    await this.bookingService.approveBooking(param.publicId);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':publicId/refuse')
+  async refuseBooking(@Param() param: BookingDetailParamDTO) {
+    await this.bookingService.refuseBooking(param.publicId);
   }
 }
