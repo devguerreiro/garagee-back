@@ -55,6 +55,7 @@ export class BookingRepository {
                 },
                 occupant: {
                   select: {
+                    public_id: true,
                     name: true,
                   },
                 },
@@ -62,6 +63,7 @@ export class BookingRepository {
             },
           },
         },
+        claimant_id: true,
       },
     });
   }

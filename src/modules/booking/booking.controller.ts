@@ -7,6 +7,7 @@ import {
   Patch,
   Query,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -43,19 +44,47 @@ export class BookingController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/revoke')
-  async revokeBooking(@Param() param: BookingDetailParamDTO) {
-    await this.bookingService.revokeBooking(param.publicId);
+  async revokeBooking(
+    @Req() request: AuthenticatedRequest,
+    @Param() param: BookingDetailParamDTO,
+  ) {
+    const booking = await this.bookingService.getBookingDetail(param.publicId);
+    if (booking?.claimant_id === request.user.sub) {
+      await this.bookingService.revokeBooking(param.publicId);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/approve')
-  async approveBooking(@Param() param: BookingDetailParamDTO) {
-    await this.bookingService.approveBooking(param.publicId);
+  async approveBooking(
+    @Req() request: AuthenticatedRequest,
+    @Param() param: BookingDetailParamDTO,
+  ) {
+    const booking = await this.bookingService.getBookingDetail(param.publicId);
+    if (
+      booking?.parking_space.apartment.occupant?.public_id === request.user.sub
+    ) {
+      await this.bookingService.approveBooking(param.publicId);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':publicId/refuse')
-  async refuseBooking(@Param() param: BookingDetailParamDTO) {
-    await this.bookingService.refuseBooking(param.publicId);
+  async refuseBooking(
+    @Req() request: AuthenticatedRequest,
+    @Param() param: BookingDetailParamDTO,
+  ) {
+    const booking = await this.bookingService.getBookingDetail(param.publicId);
+    if (
+      booking?.parking_space.apartment.occupant?.public_id === request.user.sub
+    ) {
+      await this.bookingService.refuseBooking(param.publicId);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 }
