@@ -9,9 +9,14 @@ import { CreateBookingDTO } from './booking.dto';
 export class BookingService {
   constructor(private readonly bookingRepository: BookingRepository) {}
 
-  async checkParkingSpaceAvailability(from: Date, to: Date) {
+  async checkParkingSpaceAvailability(
+    claimantPublicId: string,
+    from: Date,
+    to: Date,
+  ) {
     const count = await this.bookingRepository.count({
       OR: [
+        // must not be able booking if there is already an approved booking for the same period
         {
           booked_from: {
             lte: from,
@@ -30,6 +35,27 @@ export class BookingService {
           },
           status: BookingStatus.APPROVED,
         },
+        // must not be able booking if there is already a pending booking for the same period by same claimant
+        {
+          booked_from: {
+            lte: from,
+          },
+          booked_to: {
+            gte: from,
+          },
+          status: BookingStatus.PENDING,
+          claimant_id: claimantPublicId,
+        },
+        {
+          booked_from: {
+            lte: to,
+          },
+          booked_to: {
+            gte: to,
+          },
+          status: BookingStatus.PENDING,
+          claimant_id: claimantPublicId,
+        },
       ],
     });
     return count === 0;
@@ -37,6 +63,7 @@ export class BookingService {
 
   async createBooking(claimantPublicId: string, data: CreateBookingDTO) {
     const isParkingSpaceAvailable = await this.checkParkingSpaceAvailability(
+      claimantPublicId,
       data.booked_from,
       data.booked_to,
     );
