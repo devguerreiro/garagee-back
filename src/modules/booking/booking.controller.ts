@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
+  Post,
   Query,
   Req,
   UnauthorizedException,
@@ -16,13 +19,31 @@ import { AuthenticatedRequest } from 'src/types';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
 
 import { BookingService } from './booking.service';
-import { BookingDetailParamDTO, BookingsQueryDTO } from './booking.dto';
+import {
+  BookingDetailParamDTO,
+  BookingsQueryDTO,
+  CreateBookingDTO,
+} from './booking.dto';
 import { BookingStatus } from '@prisma/client';
 
 @UseGuards(AuthGuard)
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
+
+  @Post()
+  async createBooking(
+    @Req() request: AuthenticatedRequest,
+    @Body() data: CreateBookingDTO,
+  ) {
+    try {
+      return await this.bookingService.createBooking(request.user.sub, data);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new BadRequestException(e.message);
+      }
+    }
+  }
 
   @Get('my')
   async getMyBookings(

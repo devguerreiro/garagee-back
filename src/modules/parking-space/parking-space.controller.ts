@@ -38,8 +38,8 @@ export class ParkingSpaceController {
   ) {
     const user = await this.userService.getByPublicId(request.user.sub);
     if (user) {
-      return await this.parkingSpaceService.getParkingSpacesByApartment(
-        user.apartment_id,
+      return await this.parkingSpaceService.getParkingSpacesByBuilding(
+        user.apartment.tower.building_id,
         query.isCovered === undefined
           ? query.isCovered
           : (eval(query.isCovered) as boolean),

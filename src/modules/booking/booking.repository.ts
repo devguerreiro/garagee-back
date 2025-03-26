@@ -6,6 +6,10 @@ import { PrismaService } from 'nestjs-prisma';
 export class BookingRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async createBooking(data: Prisma.BookingCreateInput) {
+    return await this.prismaService.booking.create({ data });
+  }
+
   async getBookings(where: Prisma.BookingWhereInput) {
     return await this.prismaService.booking.findMany({
       where,
@@ -73,5 +77,9 @@ export class BookingRepository {
       data,
       where: { public_id: publicId },
     });
+  }
+
+  async count(where: Prisma.BookingWhereInput) {
+    return await this.prismaService.booking.count({ where });
   }
 }

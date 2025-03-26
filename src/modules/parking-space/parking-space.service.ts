@@ -8,15 +8,23 @@ export class ParkingSpaceService {
     private readonly parkingSpaceRepository: ParkingSpaceRepository,
   ) {}
 
-  async getParkingSpacesByApartment(
-    apartmentPublicId: string,
+  async getParkingSpacesByBuilding(
+    buildingPublicId: string,
     isCovered?: boolean,
   ) {
     const where: {
-      apartment_id: string;
+      apartment: {
+        tower: {
+          building_id: string;
+        };
+      };
       is_covered?: boolean;
     } = {
-      apartment_id: apartmentPublicId,
+      apartment: {
+        tower: {
+          building_id: buildingPublicId,
+        },
+      },
     };
     if (isCovered !== undefined) {
       where['is_covered'] = isCovered;

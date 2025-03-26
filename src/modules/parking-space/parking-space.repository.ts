@@ -8,7 +8,9 @@ export class ParkingSpaceRepository {
 
   async getParkingSpaces(where: Prisma.ParkingSpaceWhereInput) {
     return await this.prismaService.parkingSpace.findMany({
-      where,
+      where: {
+        ...where,
+      },
       select: {
         public_id: true,
         identifier: true,
