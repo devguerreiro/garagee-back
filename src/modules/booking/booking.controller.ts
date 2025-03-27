@@ -50,7 +50,7 @@ export class BookingController {
     @Req() request: AuthenticatedRequest,
     @Query() query: BookingsQueryDTO,
   ) {
-    return await this.bookingService.getMyBookings(
+    return await this.bookingService.getBookingsByClaimant(
       request.user.sub,
       query.status === undefined
         ? query.status

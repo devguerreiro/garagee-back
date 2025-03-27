@@ -10,10 +10,13 @@ export class BookingRepository {
     return await this.prismaService.booking.create({ data });
   }
 
-  async getBookings(where: Prisma.BookingWhereInput) {
+  async getBookings(
+    where: Prisma.BookingWhereInput,
+    select?: Prisma.BookingSelect,
+  ) {
     return await this.prismaService.booking.findMany({
       where,
-      select: {
+      select: select ?? {
         public_id: true,
         status: true,
         booked_from: true,

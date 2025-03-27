@@ -16,6 +16,7 @@ import { AuthenticatedRequest } from 'src/types';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
 
 import { UserService } from 'src/modules/user/user.service';
+import { BookingService } from 'src/modules/booking/booking.service';
 
 import { ParkingSpaceService } from './parking-space.service';
 import {
@@ -29,6 +30,7 @@ export class ParkingSpaceController {
   constructor(
     private readonly parkingSpaceService: ParkingSpaceService,
     private readonly userService: UserService,
+    private readonly bookingService: BookingService,
   ) {}
 
   @Get()
@@ -90,5 +92,10 @@ export class ParkingSpaceController {
       return await this.parkingSpaceService.unblockParkingSpace(param.publicId);
     }
     throw new UnauthorizedException();
+  }
+
+  @Get(':publicId/bookings')
+  async getBookings(@Param() param: ParkingSpaceDetailParamDTO) {
+    return await this.bookingService.getBookingsByParkingSpace(param.publicId);
   }
 }

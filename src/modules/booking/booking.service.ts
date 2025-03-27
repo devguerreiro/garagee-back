@@ -86,7 +86,10 @@ export class BookingService {
     throw new Error('parking space not available');
   }
 
-  async getMyBookings(claimantPublicId: string, status?: BookingStatus) {
+  async getBookingsByClaimant(
+    claimantPublicId: string,
+    status?: BookingStatus,
+  ) {
     return await this.bookingRepository.getBookings({
       claimant_id: claimantPublicId,
       status,
@@ -115,5 +118,21 @@ export class BookingService {
     return await this.bookingRepository.update(publicId, {
       status: BookingStatus.REFUSED,
     });
+  }
+
+  async getBookingsByParkingSpace(parkingSpacePublicId: string) {
+    return await this.bookingRepository.getBookings(
+      {
+        parking_space_id: parkingSpacePublicId,
+        status: BookingStatus.APPROVED,
+        booked_from: {
+          gte: new Date(),
+        },
+      },
+      {
+        booked_from: true,
+        booked_to: true,
+      },
+    );
   }
 }
