@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { BookingStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
@@ -64,6 +64,18 @@ export class ParkingSpaceRepository {
                 name: true,
               },
             },
+          },
+        },
+        bookings: {
+          where: {
+            status: BookingStatus.APPROVED,
+            booked_from: {
+              gte: new Date(),
+            },
+          },
+          select: {
+            booked_from: true,
+            booked_to: true,
           },
         },
       },

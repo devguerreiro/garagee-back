@@ -119,20 +119,4 @@ export class BookingService {
       status: BookingStatus.REFUSED,
     });
   }
-
-  async getBookingsByParkingSpace(parkingSpacePublicId: string) {
-    return await this.bookingRepository.getBookings(
-      {
-        parking_space_id: parkingSpacePublicId,
-        status: BookingStatus.APPROVED,
-        booked_from: {
-          gte: new Date(),
-        },
-      },
-      {
-        booked_from: true,
-        booked_to: true,
-      },
-    );
-  }
 }
