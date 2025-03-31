@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { BookingStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
+import dayjs from 'src/lib/dayjs';
+
 @Injectable()
 export class ParkingSpaceRepository {
   constructor(private readonly prismaService: PrismaService) {}
@@ -69,9 +71,18 @@ export class ParkingSpaceRepository {
         bookings: {
           where: {
             status: BookingStatus.APPROVED,
-            booked_from: {
-              gte: new Date(),
-            },
+            OR: [
+              {
+                booked_from: {
+                  gte: dayjs().toDate(),
+                },
+              },
+              {
+                booked_to: {
+                  gte: dayjs().toDate(),
+                },
+              },
+            ],
           },
           select: {
             booked_from: true,
