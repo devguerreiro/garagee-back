@@ -1,6 +1,8 @@
+import { Transform, Type } from 'class-transformer';
 import {
-  IsBooleanString,
+  IsBoolean,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -8,8 +10,11 @@ import {
 
 export class ParkingSpacesQueryDTO {
   @IsOptional()
-  @IsBooleanString()
-  isCovered?: 'true' | 'false';
+  @IsBoolean()
+  @Transform(({ value }) =>
+    value === undefined ? undefined : value === 'true',
+  )
+  isCovered?: boolean;
 }
 
 export class ParkingSpaceDetailParamDTO {
@@ -17,4 +22,11 @@ export class ParkingSpaceDetailParamDTO {
   @IsString()
   @IsUUID()
   publicId: string;
+}
+
+export class ParkingSpaceDetailQueryDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  timezoneOffset: number;
 }

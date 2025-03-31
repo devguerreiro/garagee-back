@@ -20,6 +20,7 @@ import { UserService } from 'src/modules/user/user.service';
 import { ParkingSpaceService } from './parking-space.service';
 import {
   ParkingSpaceDetailParamDTO,
+  ParkingSpaceDetailQueryDTO,
   ParkingSpacesQueryDTO,
 } from './parking-space.dto';
 
@@ -40,9 +41,7 @@ export class ParkingSpaceController {
     if (user) {
       return await this.parkingSpaceService.getParkingSpacesByBuilding(
         user.apartment.tower.building_id,
-        query.isCovered === undefined
-          ? query.isCovered
-          : (eval(query.isCovered) as boolean),
+        query.isCovered,
       );
     }
     throw new UnauthorizedException();
@@ -56,8 +55,14 @@ export class ParkingSpaceController {
   }
 
   @Get(':publicId')
-  async getParkingSpaceDetail(@Param() param: ParkingSpaceDetailParamDTO) {
-    return await this.parkingSpaceService.getParkingSpaceDetail(param.publicId);
+  async getParkingSpaceDetail(
+    @Param() param: ParkingSpaceDetailParamDTO,
+    @Query() query: ParkingSpaceDetailQueryDTO,
+  ) {
+    return await this.parkingSpaceService.getParkingSpaceDetail(
+      param.publicId,
+      query.timezoneOffset,
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

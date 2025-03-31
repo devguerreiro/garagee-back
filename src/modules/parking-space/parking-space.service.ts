@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 
 import dayjs from 'src/lib/dayjs';
 
-import { brazilianDate } from 'src/utils';
-
 import { ParkingSpaceRepository } from './parking-space.repository';
 
 type Calendar = Record<string, Array<number>>;
@@ -38,13 +36,13 @@ export class ParkingSpaceService {
     return await this.parkingSpaceRepository.getParkingSpaces(where);
   }
 
-  async getParkingSpaceDetail(publicId: string) {
+  async getParkingSpaceDetail(publicId: string, timezoneOffset: number) {
     const parkingSpace = await this.parkingSpaceRepository.getParkingSpace({
       public_id: publicId,
     });
     return {
       ...parkingSpace,
-      bookings: this.getBookingsCalendar(parkingSpace.bookings),
+      bookings: this.getBookingsCalendar(parkingSpace.bookings, timezoneOffset),
     };
   }
 
@@ -88,19 +86,24 @@ export class ParkingSpaceService {
     });
   }
 
-  private getBookingCalendar(booking: {
-    booked_from: Date;
-    booked_to: Date;
-  }): Calendar {
+  private getBookingCalendar(
+    booking: {
+      booked_from: Date;
+      booked_to: Date;
+    },
+    timezoneOffset: number,
+  ): Calendar {
     const calendar: Record<string, Array<number>> = {};
 
-    let bookedDate = dayjs(booking.booked_from);
+    const bookedTo = dayjs(booking.booked_to).utcOffset(timezoneOffset);
+
+    let bookedDate = dayjs(booking.booked_from).utcOffset(timezoneOffset);
 
     while (
-      bookedDate.isBefore(dayjs(booking.booked_to), 'hour') ||
-      bookedDate.isSame(dayjs(booking.booked_to), 'hour')
+      bookedDate.isBefore(bookedTo, 'hour') ||
+      bookedDate.isSame(bookedTo, 'hour')
     ) {
-      const date = brazilianDate(bookedDate.toDate());
+      const date = bookedDate.format('L');
       const hour = bookedDate.hour();
       if (calendar[date] === undefined) {
         calendar[date] = [hour];
@@ -115,10 +118,14 @@ export class ParkingSpaceService {
 
   private getBookingsCalendar(
     bookings: Array<{ booked_from: Date; booked_to: Date }>,
+    timezoneOffset: number,
   ): Calendar {
     return bookings.reduce(
       (calendar, booking) => {
-        const bookingCalendar = this.getBookingCalendar(booking);
+        const bookingCalendar = this.getBookingCalendar(
+          booking,
+          timezoneOffset,
+        );
         return { ...calendar, ...bookingCalendar };
       },
       {} as Record<string, Array<number>>,
