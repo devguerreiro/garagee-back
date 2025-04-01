@@ -1,14 +1,13 @@
-import { Type } from 'class-transformer';
+import { BookingStatus } from '@prisma/client';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
-  IsIn,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
-
-const statuses = ['approved', 'pending', 'refused'] as const;
 
 export class CreateBookingDTO {
   @IsNotEmpty()
@@ -29,8 +28,9 @@ export class CreateBookingDTO {
 export class BookingsQueryDTO {
   @IsOptional()
   @IsString()
-  @IsIn(statuses)
-  status?: (typeof statuses)[number];
+  @Transform(({ value }) => (value as string).toUpperCase())
+  @IsEnum(BookingStatus)
+  status?: BookingStatus;
 }
 
 export class BookingDetailParamDTO {

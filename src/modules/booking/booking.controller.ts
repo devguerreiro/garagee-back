@@ -24,7 +24,6 @@ import {
   BookingsQueryDTO,
   CreateBookingDTO,
 } from './booking.dto';
-import { BookingStatus } from '@prisma/client';
 
 @UseGuards(AuthGuard)
 @Controller('booking')
@@ -52,9 +51,7 @@ export class BookingController {
   ) {
     return await this.bookingService.getBookingsByClaimant(
       request.user.sub,
-      query.status === undefined
-        ? query.status
-        : (BookingStatus[query.status.toUpperCase()] as BookingStatus),
+      query.status,
     );
   }
 
