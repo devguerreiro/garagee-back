@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { BookingStatus } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 
 import dayjs from 'src/lib/dayjs';
-
-import { ParkingSpaceRepository } from './parking-space.repository';
 
 type Calendar = Record<string, Array<number>>;
 
 @Injectable()
 export class ParkingSpaceService {
-  constructor(
-    private readonly parkingSpaceRepository: ParkingSpaceRepository,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getParkingSpacesByBuilding(
     buildingPublicId: string,
@@ -33,13 +31,89 @@ export class ParkingSpaceService {
     if (isCovered !== undefined) {
       where['is_covered'] = isCovered;
     }
-    return await this.parkingSpaceRepository.getParkingSpaces(where);
+    return await this.prismaService.parkingSpace.findMany({
+      where,
+      select: {
+        public_id: true,
+        identifier: true,
+        apartment: {
+          select: {
+            identifier: true,
+            tower: {
+              select: {
+                building: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            occupant: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async getParkingSpaceDetail(publicId: string, timezoneOffset: number) {
-    const parkingSpace = await this.parkingSpaceRepository.getParkingSpace({
-      public_id: publicId,
-    });
+    const parkingSpace =
+      await this.prismaService.parkingSpace.findUniqueOrThrow({
+        where: {
+          public_id: publicId,
+        },
+        select: {
+          public_id: true,
+          identifier: true,
+          guidance: true,
+          is_covered: true,
+          is_blocked: true,
+          apartment: {
+            select: {
+              identifier: true,
+              tower: {
+                select: {
+                  building: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+              occupant: {
+                select: {
+                  public_id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          bookings: {
+            where: {
+              status: BookingStatus.APPROVED,
+              OR: [
+                {
+                  booked_from: {
+                    gte: dayjs().toDate(),
+                  },
+                },
+                {
+                  booked_to: {
+                    gte: dayjs().toDate(),
+                  },
+                },
+              ],
+            },
+            select: {
+              booked_from: true,
+              booked_to: true,
+            },
+          },
+        },
+      });
     return {
       ...parkingSpace,
       bookings: this.getBookingsCalendar(parkingSpace.bookings, timezoneOffset),
@@ -47,40 +121,120 @@ export class ParkingSpaceService {
   }
 
   async blockParkingSpace(publicId: string) {
-    await this.parkingSpaceRepository.updateParkingSpace(
-      {
+    await this.prismaService.parkingSpace.update({
+      data: {
         is_blocked: true,
       },
-      {
+      where: {
         public_id: publicId,
       },
-    );
+    });
   }
 
   async unblockParkingSpace(publicId: string) {
-    await this.parkingSpaceRepository.updateParkingSpace(
-      {
+    await this.prismaService.parkingSpace.update({
+      data: {
         is_blocked: false,
       },
-      {
+      where: {
         public_id: publicId,
       },
-    );
+    });
   }
 
   async isParkingSpaceOccupant(publicId: string, userPublicId: string) {
-    const parkingSpace = await this.parkingSpaceRepository.getParkingSpace({
-      public_id: publicId,
-    });
+    const parkingSpace =
+      await this.prismaService.parkingSpace.findUniqueOrThrow({
+        where: {
+          public_id: publicId,
+        },
+        select: {
+          public_id: true,
+          identifier: true,
+          guidance: true,
+          is_covered: true,
+          is_blocked: true,
+          apartment: {
+            select: {
+              identifier: true,
+              tower: {
+                select: {
+                  building: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+              occupant: {
+                select: {
+                  public_id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          bookings: {
+            where: {
+              status: BookingStatus.APPROVED,
+              OR: [
+                {
+                  booked_from: {
+                    gte: dayjs().toDate(),
+                  },
+                },
+                {
+                  booked_to: {
+                    gte: dayjs().toDate(),
+                  },
+                },
+              ],
+            },
+            select: {
+              booked_from: true,
+              booked_to: true,
+            },
+          },
+        },
+      });
     const occupant = parkingSpace.apartment.occupant;
     return occupant && occupant.public_id === userPublicId;
   }
 
   async getParkingSpaceByOccupant(occupantPublicId: string) {
-    return await this.parkingSpaceRepository.getFirstParkingSpace({
-      apartment: {
-        occupant: {
-          public_id: occupantPublicId,
+    return await this.prismaService.parkingSpace.findFirstOrThrow({
+      where: {
+        apartment: {
+          occupant: {
+            public_id: occupantPublicId,
+          },
+        },
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+        guidance: true,
+        is_covered: true,
+        is_blocked: true,
+        apartment: {
+          select: {
+            identifier: true,
+            tower: {
+              select: {
+                building: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            occupant: {
+              select: {
+                public_id: true,
+                name: true,
+              },
+            },
+          },
         },
       },
     });

@@ -61,15 +61,4 @@ export class UserService {
       },
     });
   }
-
-  async userExists(publicId: string) {
-    return (
-      (await this.prismaService.user.count({
-        where: {
-          public_id: publicId,
-          is_active: true,
-        },
-      })) > 0
-    );
-  }
 }

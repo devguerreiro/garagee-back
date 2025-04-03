@@ -1,33 +1,45 @@
 import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 
 import { toTitleCase } from 'src/utils';
 
 import { CreateUserDTO } from './register.dto';
-import { RegisterRepository } from './register.repository';
 
 const saltOrRounds = 10;
 
 @Injectable()
 export class RegisterService {
-  constructor(private readonly registerRepository: RegisterRepository) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async createUser(data: CreateUserDTO) {
     const hashedPassword = await bcrypt.hash(data.password, saltOrRounds);
-    return await this.registerRepository.createUser({
-      ...data,
-      name: toTitleCase(data.name),
-      password: hashedPassword,
+    return await this.prismaService.user.create({
+      data: {
+        ...data,
+        name: toTitleCase(data.name),
+        password: hashedPassword,
+        apartment: {
+          connect: {
+            public_id: data.apartment,
+          },
+        },
+      },
+      omit: {
+        password: true,
+      },
     });
   }
 
   async getBuildingsByName(name: string) {
     if (name.length >= 3) {
-      return await this.registerRepository.getBuildings({
-        name: {
-          contains: name,
-          mode: 'insensitive',
+      return await this.prismaService.building.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
         },
       });
     }
@@ -35,14 +47,26 @@ export class RegisterService {
   }
 
   async getTowersByBuilding(buildingPublicId: string) {
-    return await this.registerRepository.getTowers({
-      building_id: buildingPublicId,
+    return await this.prismaService.tower.findMany({
+      where: {
+        building_id: buildingPublicId,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+      },
     });
   }
 
   async getApartmentsByTower(towerPublicId: string) {
-    return await this.registerRepository.getApartments({
-      tower_id: towerPublicId,
+    return await this.prismaService.apartment.findMany({
+      where: {
+        tower_id: towerPublicId,
+      },
+      select: {
+        public_id: true,
+        identifier: true,
+      },
     });
   }
 }

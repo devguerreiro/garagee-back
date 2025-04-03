@@ -1,62 +1,64 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 
 import { BookingStatus } from '@prisma/client';
 
-import { BookingRepository } from './booking.repository';
 import { CreateBookingDTO } from './booking.dto';
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly bookingRepository: BookingRepository) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async checkParkingSpaceAvailability(
     claimantPublicId: string,
     from: Date,
     to: Date,
   ) {
-    const count = await this.bookingRepository.count({
-      OR: [
-        // must not be able booking if there is already an approved booking for the same period
-        {
-          booked_from: {
-            lte: from,
+    const count = await this.prismaService.booking.count({
+      where: {
+        OR: [
+          // must not be able booking if there is already an approved booking for the same period
+          {
+            booked_from: {
+              lte: from,
+            },
+            booked_to: {
+              gte: from,
+            },
+            status: BookingStatus.APPROVED,
           },
-          booked_to: {
-            gte: from,
+          {
+            booked_from: {
+              lte: to,
+            },
+            booked_to: {
+              gte: to,
+            },
+            status: BookingStatus.APPROVED,
           },
-          status: BookingStatus.APPROVED,
-        },
-        {
-          booked_from: {
-            lte: to,
+          // must not be able booking if there is already a pending booking for the same period by same claimant
+          {
+            booked_from: {
+              lte: from,
+            },
+            booked_to: {
+              gte: from,
+            },
+            status: BookingStatus.PENDING,
+            claimant_id: claimantPublicId,
           },
-          booked_to: {
-            gte: to,
+          {
+            booked_from: {
+              lte: to,
+            },
+            booked_to: {
+              gte: to,
+            },
+            status: BookingStatus.PENDING,
+            claimant_id: claimantPublicId,
           },
-          status: BookingStatus.APPROVED,
-        },
-        // must not be able booking if there is already a pending booking for the same period by same claimant
-        {
-          booked_from: {
-            lte: from,
-          },
-          booked_to: {
-            gte: from,
-          },
-          status: BookingStatus.PENDING,
-          claimant_id: claimantPublicId,
-        },
-        {
-          booked_from: {
-            lte: to,
-          },
-          booked_to: {
-            gte: to,
-          },
-          status: BookingStatus.PENDING,
-          claimant_id: claimantPublicId,
-        },
-      ],
+        ],
+      },
     });
     return count === 0;
   }
@@ -69,16 +71,18 @@ export class BookingService {
     );
 
     if (isParkingSpaceAvailable) {
-      return await this.bookingRepository.createBooking({
-        ...data,
-        claimant: {
-          connect: {
-            public_id: claimantPublicId,
+      return await this.prismaService.booking.create({
+        data: {
+          ...data,
+          claimant: {
+            connect: {
+              public_id: claimantPublicId,
+            },
           },
-        },
-        parking_space: {
-          connect: {
-            public_id: data.parking_space,
+          parking_space: {
+            connect: {
+              public_id: data.parking_space,
+            },
           },
         },
       });
@@ -90,33 +94,96 @@ export class BookingService {
     claimantPublicId: string,
     status?: BookingStatus,
   ) {
-    return await this.bookingRepository.getBookings({
-      claimant_id: claimantPublicId,
-      status,
+    return await this.prismaService.booking.findMany({
+      where: {
+        claimant_id: claimantPublicId,
+        status,
+      },
+      select: {
+        public_id: true,
+        status: true,
+        booked_from: true,
+        booked_to: true,
+        parking_space: {
+          select: {
+            identifier: true,
+            apartment: {
+              select: {
+                tower: {
+                  select: {
+                    building: { select: { name: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   async getBookingDetail(publicId: string) {
-    return await this.bookingRepository.getBooking({
-      public_id: publicId,
+    return await this.prismaService.booking.findUnique({
+      where: {
+        public_id: publicId,
+      },
+      select: {
+        public_id: true,
+        status: true,
+        booked_from: true,
+        booked_to: true,
+        parking_space: {
+          select: {
+            identifier: true,
+            guidance: true,
+            is_covered: true,
+            apartment: {
+              select: {
+                identifier: true,
+                tower: {
+                  select: {
+                    building: { select: { name: true } },
+                  },
+                },
+                occupant: {
+                  select: {
+                    public_id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        claimant_id: true,
+      },
     });
   }
 
   async revokeBooking(publicId: string) {
-    return await this.bookingRepository.update(publicId, {
-      status: BookingStatus.REVOKED,
+    await this.prismaService.booking.update({
+      data: {
+        status: BookingStatus.REVOKED,
+      },
+      where: { public_id: publicId },
     });
   }
 
   async approveBooking(publicId: string) {
-    return await this.bookingRepository.update(publicId, {
-      status: BookingStatus.APPROVED,
+    await this.prismaService.booking.update({
+      data: {
+        status: BookingStatus.APPROVED,
+      },
+      where: { public_id: publicId },
     });
   }
 
   async refuseBooking(publicId: string) {
-    return await this.bookingRepository.update(publicId, {
-      status: BookingStatus.REFUSED,
+    await this.prismaService.booking.update({
+      data: {
+        status: BookingStatus.REFUSED,
+      },
+      where: { public_id: publicId },
     });
   }
 }
