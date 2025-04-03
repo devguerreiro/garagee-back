@@ -134,6 +134,9 @@ export class ParkingSpaceRepository {
       select: {
         public_id: true,
         identifier: true,
+        guidance: true,
+        is_covered: true,
+        is_blocked: true,
         apartment: {
           select: {
             identifier: true,
@@ -148,6 +151,7 @@ export class ParkingSpaceRepository {
             },
             occupant: {
               select: {
+                public_id: true,
                 name: true,
               },
             },

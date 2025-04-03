@@ -37,10 +37,10 @@ export class ParkingSpaceController {
     @Req() request: AuthenticatedRequest,
     @Query() query: ParkingSpacesQueryDTO,
   ) {
-    const user = await this.userService.getByPublicId(request.user.sub);
+    const user = await this.userService.getUserWithBuilding(request.user.sub);
     if (user) {
       return await this.parkingSpaceService.getParkingSpacesByBuilding(
-        user.apartment.tower.building_id,
+        user.apartment.tower.building.public_id,
         query.isCovered,
       );
     }
