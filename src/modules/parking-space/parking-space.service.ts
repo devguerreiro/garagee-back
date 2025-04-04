@@ -39,6 +39,7 @@ export class ParkingSpaceService {
             occupant: null,
           },
         },
+        is_blocked: false,
       },
       select: {
         public_id: true,
@@ -76,6 +77,7 @@ export class ParkingSpaceService {
               occupant: null,
             },
           },
+          is_blocked: false,
         },
         select: {
           public_id: true,
