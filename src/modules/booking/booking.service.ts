@@ -76,7 +76,12 @@ export class BookingService {
       },
     });
 
-    return bookingsCount === 0 && parkingSpace?.apartment.occupant !== null;
+    // has no booking, has occupant and is not blocked
+    return (
+      bookingsCount === 0 &&
+      parkingSpace?.apartment.occupant !== null &&
+      !parkingSpace?.is_blocked
+    );
   }
 
   async createBooking(claimantPublicId: string, data: CreateBookingDTO) {
