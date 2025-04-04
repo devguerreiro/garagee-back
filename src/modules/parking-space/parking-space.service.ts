@@ -178,8 +178,9 @@ export class ParkingSpaceService {
           public_id: publicId,
         },
       });
+    } else {
+      throw new NotOccupantException();
     }
-    throw new NotOccupantException();
   }
 
   async unblockParkingSpace(publicId: string, userPublicId: string) {
@@ -196,8 +197,9 @@ export class ParkingSpaceService {
           public_id: publicId,
         },
       });
+    } else {
+      throw new NotOccupantException();
     }
-    throw new NotOccupantException();
   }
 
   async isParkingSpaceOccupant(publicId: string, userPublicId: string) {
