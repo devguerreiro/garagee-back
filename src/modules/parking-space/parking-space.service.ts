@@ -32,7 +32,14 @@ export class ParkingSpaceService {
       where['is_covered'] = isCovered;
     }
     return await this.prismaService.parkingSpace.findMany({
-      where,
+      where: {
+        ...where,
+        apartment: {
+          NOT: {
+            occupant: null,
+          },
+        },
+      },
       select: {
         public_id: true,
         identifier: true,
