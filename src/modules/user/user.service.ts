@@ -6,9 +6,10 @@ export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getUserForAuth(username: string) {
-    return await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUniqueOrThrow({
       where: {
         username,
+        is_active: true,
       },
       select: {
         public_id: true,
@@ -18,9 +19,10 @@ export class UserService {
   }
 
   async getUserWithBuilding(publicId: string) {
-    return await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUniqueOrThrow({
       where: {
         public_id: publicId,
+        is_active: true,
       },
       include: {
         apartment: {
@@ -37,9 +39,10 @@ export class UserService {
   }
 
   async getUserProfile(publicId: string) {
-    return await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUniqueOrThrow({
       where: {
         public_id: publicId,
+        is_active: true,
       },
       select: {
         public_id: true,

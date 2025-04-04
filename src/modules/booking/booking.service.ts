@@ -3,6 +3,8 @@ import { PrismaService } from 'nestjs-prisma';
 
 import { BookingStatus } from '@prisma/client';
 
+import { NotOccupantException } from 'src/exceptions/user.exception';
+
 import { CreateBookingDTO } from './booking.dto';
 
 @Injectable()
@@ -182,30 +184,45 @@ export class BookingService {
     });
   }
 
-  async revokeBooking(publicId: string) {
-    await this.prismaService.booking.update({
-      data: {
-        status: BookingStatus.REVOKED,
-      },
-      where: { public_id: publicId },
-    });
+  async revokeBooking(publicId: string, userPublicId: string) {
+    const booking = await this.getBookingDetail(publicId);
+    if (booking?.claimant_id === userPublicId) {
+      await this.prismaService.booking.update({
+        data: {
+          status: BookingStatus.REVOKED,
+        },
+        where: { public_id: publicId },
+      });
+    } else {
+      throw new NotOccupantException();
+    }
   }
 
-  async approveBooking(publicId: string) {
-    await this.prismaService.booking.update({
-      data: {
-        status: BookingStatus.APPROVED,
-      },
-      where: { public_id: publicId },
-    });
+  async approveBooking(publicId: string, userPublicId: string) {
+    const booking = await this.getBookingDetail(publicId);
+    if (booking?.parking_space.apartment.occupant?.public_id === userPublicId) {
+      await this.prismaService.booking.update({
+        data: {
+          status: BookingStatus.APPROVED,
+        },
+        where: { public_id: publicId },
+      });
+    } else {
+      throw new NotOccupantException();
+    }
   }
 
-  async refuseBooking(publicId: string) {
-    await this.prismaService.booking.update({
-      data: {
-        status: BookingStatus.REFUSED,
-      },
-      where: { public_id: publicId },
-    });
+  async refuseBooking(publicId: string, userPublicId: string) {
+    const booking = await this.getBookingDetail(publicId);
+    if (booking?.parking_space.apartment.occupant?.public_id === userPublicId) {
+      await this.prismaService.booking.update({
+        data: {
+          status: BookingStatus.REFUSED,
+        },
+        where: { public_id: publicId },
+      });
+    } else {
+      throw new NotOccupantException();
+    }
   }
 }

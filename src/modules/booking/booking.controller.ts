@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -66,12 +65,7 @@ export class BookingController {
     @Req() request: AuthenticatedRequest,
     @Param() param: BookingDetailParamDTO,
   ) {
-    const booking = await this.bookingService.getBookingDetail(param.publicId);
-    if (booking?.claimant_id === request.user.sub) {
-      await this.bookingService.revokeBooking(param.publicId);
-    } else {
-      throw new UnauthorizedException();
-    }
+    await this.bookingService.revokeBooking(param.publicId, request.user.sub);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -80,14 +74,7 @@ export class BookingController {
     @Req() request: AuthenticatedRequest,
     @Param() param: BookingDetailParamDTO,
   ) {
-    const booking = await this.bookingService.getBookingDetail(param.publicId);
-    if (
-      booking?.parking_space.apartment.occupant?.public_id === request.user.sub
-    ) {
-      await this.bookingService.approveBooking(param.publicId);
-    } else {
-      throw new UnauthorizedException();
-    }
+    await this.bookingService.approveBooking(param.publicId, request.user.sub);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -96,13 +83,6 @@ export class BookingController {
     @Req() request: AuthenticatedRequest,
     @Param() param: BookingDetailParamDTO,
   ) {
-    const booking = await this.bookingService.getBookingDetail(param.publicId);
-    if (
-      booking?.parking_space.apartment.occupant?.public_id === request.user.sub
-    ) {
-      await this.bookingService.refuseBooking(param.publicId);
-    } else {
-      throw new UnauthorizedException();
-    }
+    await this.bookingService.refuseBooking(param.publicId, request.user.sub);
   }
 }

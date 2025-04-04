@@ -7,15 +7,12 @@ import {
   Patch,
   Query,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
 import { AuthenticatedRequest } from 'src/types';
 
 import { AuthGuard } from 'src/modules/auth/auth.guard';
-
-import { UserService } from 'src/modules/user/user.service';
 
 import { ParkingSpaceService } from './parking-space.service';
 import {
@@ -27,24 +24,17 @@ import {
 @UseGuards(AuthGuard)
 @Controller('parking-space')
 export class ParkingSpaceController {
-  constructor(
-    private readonly parkingSpaceService: ParkingSpaceService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly parkingSpaceService: ParkingSpaceService) {}
 
   @Get()
   async getParkingSpaces(
     @Req() request: AuthenticatedRequest,
     @Query() query: ParkingSpacesQueryDTO,
   ) {
-    const user = await this.userService.getUserWithBuilding(request.user.sub);
-    if (user) {
-      return await this.parkingSpaceService.getParkingSpacesByBuilding(
-        user.apartment.tower.building.public_id,
-        query.isCovered,
-      );
-    }
-    throw new UnauthorizedException();
+    return await this.parkingSpaceService.getParkingSpacesByBuilding(
+      request.user.sub,
+      query.isCovered,
+    );
   }
 
   @Get('my')
@@ -56,12 +46,14 @@ export class ParkingSpaceController {
 
   @Get(':publicId')
   async getParkingSpaceDetail(
+    @Req() request: AuthenticatedRequest,
     @Param() param: ParkingSpaceDetailParamDTO,
     @Query() query: ParkingSpaceDetailQueryDTO,
   ) {
     return await this.parkingSpaceService.getParkingSpaceDetail(
       param.publicId,
       query.timezoneOffset,
+      request.user.sub,
     );
   }
 
@@ -71,14 +63,10 @@ export class ParkingSpaceController {
     @Req() request: AuthenticatedRequest,
     @Param() param: ParkingSpaceDetailParamDTO,
   ) {
-    const isOccupant = await this.parkingSpaceService.isParkingSpaceOccupant(
+    await this.parkingSpaceService.blockParkingSpace(
       param.publicId,
       request.user.sub,
     );
-    if (isOccupant) {
-      return await this.parkingSpaceService.blockParkingSpace(param.publicId);
-    }
-    throw new UnauthorizedException();
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -87,13 +75,9 @@ export class ParkingSpaceController {
     @Req() request: AuthenticatedRequest,
     @Param() param: ParkingSpaceDetailParamDTO,
   ) {
-    const isOccupant = await this.parkingSpaceService.isParkingSpaceOccupant(
+    await this.parkingSpaceService.unblockParkingSpace(
       param.publicId,
       request.user.sub,
     );
-    if (isOccupant) {
-      return await this.parkingSpaceService.unblockParkingSpace(param.publicId);
-    }
-    throw new UnauthorizedException();
   }
 }
