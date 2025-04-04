@@ -71,6 +71,11 @@ export class ParkingSpaceService {
       await this.prismaService.parkingSpace.findUniqueOrThrow({
         where: {
           public_id: publicId,
+          apartment: {
+            NOT: {
+              occupant: null,
+            },
+          },
         },
         select: {
           public_id: true,
