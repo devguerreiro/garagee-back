@@ -11,10 +11,11 @@ export class BookingService {
 
   async checkParkingSpaceAvailability(
     claimantPublicId: string,
+    parkingSpacePublicId: string,
     from: Date,
     to: Date,
   ) {
-    const count = await this.prismaService.booking.count({
+    const bookingsCount = await this.prismaService.booking.count({
       where: {
         OR: [
           // must not be able booking if there is already an approved booking for the same period
@@ -58,14 +59,30 @@ export class BookingService {
             claimant_id: claimantPublicId,
           },
         ],
+        parking_space_id: parkingSpacePublicId,
       },
     });
-    return count === 0;
+
+    const parkingSpace = await this.prismaService.parkingSpace.findUnique({
+      where: {
+        public_id: parkingSpacePublicId,
+      },
+      include: {
+        apartment: {
+          include: {
+            occupant: true,
+          },
+        },
+      },
+    });
+
+    return bookingsCount === 0 && parkingSpace?.apartment.occupant !== null;
   }
 
   async createBooking(claimantPublicId: string, data: CreateBookingDTO) {
     const isParkingSpaceAvailable = await this.checkParkingSpaceAvailability(
       claimantPublicId,
+      data.parking_space,
       data.booked_from,
       data.booked_to,
     );
