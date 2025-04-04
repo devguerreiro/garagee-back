@@ -5,10 +5,10 @@ import { PrismaService } from 'nestjs-prisma';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getUserForAuth(publicId: string) {
+  async getUserForAuth(username: string) {
     return await this.prismaService.user.findUnique({
       where: {
-        public_id: publicId,
+        username,
       },
       select: {
         public_id: true,
