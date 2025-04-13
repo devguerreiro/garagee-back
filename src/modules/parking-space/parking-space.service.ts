@@ -64,11 +64,7 @@ export class ParkingSpaceService {
               identifier: true,
               tower: {
                 select: {
-                  building: {
-                    select: {
-                      name: true,
-                    },
-                  },
+                  identifier: true,
                 },
               },
               occupant: {
@@ -120,11 +116,7 @@ export class ParkingSpaceService {
               identifier: true,
               tower: {
                 select: {
-                  building: {
-                    select: {
-                      name: true,
-                    },
-                  },
+                  identifier: true,
                 },
               },
               occupant: {
@@ -261,7 +253,7 @@ export class ParkingSpaceService {
     return occupant && occupant.public_id === userPublicId;
   }
 
-  async getParkingSpaceByOccupant(occupantPublicId: string) {
+  async getMyParkingSpace(occupantPublicId: string) {
     return await this.prismaService.parkingSpace.findFirstOrThrow({
       where: {
         apartment: {
@@ -276,26 +268,6 @@ export class ParkingSpaceService {
         guidance: true,
         is_covered: true,
         is_blocked: true,
-        apartment: {
-          select: {
-            identifier: true,
-            tower: {
-              select: {
-                building: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
-            occupant: {
-              select: {
-                public_id: true,
-                name: true,
-              },
-            },
-          },
-        },
       },
     });
   }

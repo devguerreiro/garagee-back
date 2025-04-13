@@ -13,6 +13,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    mem_limit: 500m
   db:
     image: postgres:16.8-alpine
     environment:
@@ -32,6 +33,7 @@ services:
       start_period: 30s
       timeout: 10s
     restart: always
+    mem_limit: 500m
 
 networks:
   back:

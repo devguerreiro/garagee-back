@@ -13,9 +13,11 @@ import {
 import { AuthenticatedRequest } from 'src/types';
 
 import { AuthGuard } from 'src/modules/auth/auth.guard';
+import { BookingService } from 'src/modules/booking/booking.service';
 
 import { ParkingSpaceService } from './parking-space.service';
 import {
+  ParkingSpaceBookingsQueryDTO,
   ParkingSpaceDetailParamDTO,
   ParkingSpaceDetailQueryDTO,
   ParkingSpacesQueryDTO,
@@ -24,7 +26,10 @@ import {
 @UseGuards(AuthGuard)
 @Controller('parking-space')
 export class ParkingSpaceController {
-  constructor(private readonly parkingSpaceService: ParkingSpaceService) {}
+  constructor(
+    private readonly parkingSpaceService: ParkingSpaceService,
+    private readonly bookingService: BookingService,
+  ) {}
 
   @Get()
   async getParkingSpaces(
@@ -39,9 +44,7 @@ export class ParkingSpaceController {
 
   @Get('my')
   async getMyParkingSpace(@Req() request: AuthenticatedRequest) {
-    return await this.parkingSpaceService.getParkingSpaceByOccupant(
-      request.user.sub,
-    );
+    return await this.parkingSpaceService.getMyParkingSpace(request.user.sub);
   }
 
   @Get(':publicId')
@@ -78,6 +81,17 @@ export class ParkingSpaceController {
     await this.parkingSpaceService.unblockParkingSpace(
       param.publicId,
       request.user.sub,
+    );
+  }
+
+  @Get('/bookings/my')
+  async getParkingSpaceBookings(
+    @Req() request: AuthenticatedRequest,
+    @Query() query: ParkingSpaceBookingsQueryDTO,
+  ) {
+    return await this.bookingService.getBookingsByOccupant(
+      request.user.sub,
+      query.status,
     );
   }
 }

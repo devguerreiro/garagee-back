@@ -1,6 +1,8 @@
+import { BookingStatus } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -29,4 +31,12 @@ export class ParkingSpaceDetailQueryDTO {
   @IsNumber()
   @Type(() => Number)
   timezoneOffset: number;
+}
+
+export class ParkingSpaceBookingsQueryDTO {
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => (value as string).toUpperCase())
+  @IsEnum(BookingStatus)
+  status?: BookingStatus;
 }

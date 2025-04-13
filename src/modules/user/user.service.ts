@@ -52,6 +52,7 @@ export class UserService {
             identifier: true,
             tower: {
               select: {
+                identifier: true,
                 building: {
                   select: {
                     name: true,

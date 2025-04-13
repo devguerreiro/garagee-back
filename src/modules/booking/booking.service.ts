@@ -146,6 +146,45 @@ export class BookingService {
     });
   }
 
+  async getBookingsByOccupant(
+    occupantPublicId: string,
+    status?: BookingStatus,
+  ) {
+    return await this.prismaService.booking.findMany({
+      where: {
+        parking_space: {
+          apartment: {
+            occupant: {
+              public_id: occupantPublicId,
+            },
+          },
+        },
+        status,
+      },
+      select: {
+        public_id: true,
+        status: true,
+        booked_from: true,
+        booked_to: true,
+        claimant: {
+          select: {
+            name: true,
+            apartment: {
+              select: {
+                identifier: true,
+                tower: {
+                  select: {
+                    identifier: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async getBookingDetail(publicId: string) {
     return await this.prismaService.booking.findUnique({
       where: {
