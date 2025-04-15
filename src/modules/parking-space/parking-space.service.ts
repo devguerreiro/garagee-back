@@ -54,11 +54,11 @@ export class ParkingSpaceService {
               ],
             },
           },
-          is_blocked: false,
         },
         select: {
           public_id: true,
           identifier: true,
+          is_blocked: true,
           apartment: {
             select: {
               identifier: true,
@@ -103,7 +103,6 @@ export class ParkingSpaceService {
               ],
             },
           },
-          is_blocked: false,
         },
         select: {
           public_id: true,
