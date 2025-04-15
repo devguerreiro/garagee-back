@@ -135,7 +135,7 @@ export class BookingService {
               select: {
                 tower: {
                   select: {
-                    building: { select: { name: true } },
+                    identifier: true,
                   },
                 },
               },
@@ -205,7 +205,7 @@ export class BookingService {
                 identifier: true,
                 tower: {
                   select: {
-                    building: { select: { name: true } },
+                    identifier: true,
                   },
                 },
                 occupant: {
