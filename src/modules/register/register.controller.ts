@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 
 import { RegisterService } from './register.service';
 import {
@@ -12,9 +21,10 @@ import {
 export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Post()
   async createUser(@Body() data: CreateUserDTO) {
-    return await this.registerService.createUser(data);
+    await this.registerService.createUser(data);
   }
 
   @Get('building')

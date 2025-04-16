@@ -29,6 +29,7 @@ import {
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Post()
   async createBooking(
     @Req() request: AuthenticatedRequest,
