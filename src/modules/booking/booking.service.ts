@@ -5,6 +5,8 @@ import { BookingStatus } from '@prisma/client';
 
 import { NotOccupantException } from 'src/exceptions/user.exception';
 
+import dayjs from 'src/lib/dayjs';
+
 import { CreateBookingDTO } from './booking.dto';
 
 @Injectable()
@@ -87,6 +89,14 @@ export class BookingService {
   }
 
   async createBooking(claimantPublicId: string, data: CreateBookingDTO) {
+    const now = dayjs();
+
+    const from = dayjs(data.booked_from);
+    if (from.isBefore(now)) throw new Error('from must not be in past');
+
+    const to = dayjs(data.booked_to);
+    if (to.isBefore(now)) throw new Error('to must not be in past');
+
     const isParkingSpaceAvailable = await this.checkParkingSpaceAvailability(
       claimantPublicId,
       data.parking_space,

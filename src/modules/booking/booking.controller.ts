@@ -35,7 +35,7 @@ export class BookingController {
     @Body() data: CreateBookingDTO,
   ) {
     try {
-      return await this.bookingService.createBooking(request.user.sub, data);
+      await this.bookingService.createBooking(request.user.sub, data);
     } catch (e) {
       if (e instanceof Error) {
         throw new BadRequestException(e.message);
