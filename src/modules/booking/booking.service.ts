@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 
-import { BookingStatus } from '@prisma/client';
+import { BookingStatus, Prisma } from '@prisma/client';
 
 import { NotOccupantException } from 'src/exceptions/user.exception';
 
@@ -273,5 +273,9 @@ export class BookingService {
     } else {
       throw new NotOccupantException();
     }
+  }
+
+  async getBookingsQuantity(args: Prisma.BookingCountArgs) {
+    return await this.prismaService.booking.count(args);
   }
 }

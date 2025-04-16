@@ -13,6 +13,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
+import { BookingStatus } from '@prisma/client';
+
 import { AuthenticatedRequest } from 'src/types';
 
 import { AuthGuard } from 'src/modules/auth/auth.guard';
@@ -53,6 +55,22 @@ export class BookingController {
       request.user.sub,
       query.status,
     );
+  }
+
+  @Get('pending-received-quantity')
+  async getPendingReceivedQuantity(@Req() request: AuthenticatedRequest) {
+    return await this.bookingService.getBookingsQuantity({
+      where: {
+        parking_space: {
+          apartment: {
+            occupant: {
+              public_id: request.user.sub,
+            },
+          },
+        },
+        status: BookingStatus.PENDING,
+      },
+    });
   }
 
   @Get(':publicId')
