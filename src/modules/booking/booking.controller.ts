@@ -18,6 +18,7 @@ import { BookingStatus } from '@prisma/client';
 import { AuthenticatedRequest } from 'src/types';
 
 import { AuthGuard } from 'src/modules/auth/auth.guard';
+import { NotificationGateway } from 'src/modules/notification/notification.gateway';
 
 import { BookingService } from './booking.service';
 import {
@@ -29,7 +30,10 @@ import {
 @UseGuards(AuthGuard)
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(
+    private readonly bookingService: BookingService,
+    private readonly notificationGateway: NotificationGateway,
+  ) {}
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post()
@@ -38,7 +42,14 @@ export class BookingController {
     @Body() data: CreateBookingDTO,
   ) {
     try {
-      await this.bookingService.createBooking(request.user.sub, data);
+      const booking = await this.bookingService.createBooking(
+        request.user.sub,
+        data,
+      );
+      const occupant = booking.parking_space.apartment.occupant;
+      if (occupant) {
+        this.notificationGateway.notifyNewBooking(occupant.public_id);
+      }
     } catch (e) {
       if (e instanceof Error) {
         throw new BadRequestException(e.message);

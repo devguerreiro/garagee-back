@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ParkingSpaceModule } from './modules/parking-space/parking-space.module';
 import { BookingModule } from './modules/booking/booking.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BookingModule } from './modules/booking/booking.module';
     UserModule,
     ParkingSpaceModule,
     BookingModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

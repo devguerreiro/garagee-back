@@ -119,6 +119,17 @@ export class BookingService {
             },
           },
         },
+        include: {
+          parking_space: {
+            include: {
+              apartment: {
+                include: {
+                  occupant: true,
+                },
+              },
+            },
+          },
+        },
       });
     }
     throw new Error('parking space not available');

@@ -128,17 +128,32 @@ export class ParkingSpaceService {
           },
           bookings: {
             where: {
-              status: BookingStatus.APPROVED,
               OR: [
                 {
                   booked_from: {
                     gte: dayjs().toDate(),
                   },
+                  status: BookingStatus.APPROVED,
                 },
                 {
                   booked_to: {
                     gte: dayjs().toDate(),
                   },
+                  status: BookingStatus.APPROVED,
+                },
+                {
+                  booked_from: {
+                    gte: dayjs().toDate(),
+                  },
+                  status: BookingStatus.PENDING,
+                  claimant_id: userPublicId,
+                },
+                {
+                  booked_to: {
+                    gte: dayjs().toDate(),
+                  },
+                  status: BookingStatus.PENDING,
+                  claimant_id: userPublicId,
                 },
               ],
             },
