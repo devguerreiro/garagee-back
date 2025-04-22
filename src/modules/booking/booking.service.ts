@@ -41,6 +41,15 @@ export class BookingService {
             },
             status: BookingStatus.APPROVED,
           },
+          {
+            booked_from: {
+              gte: from,
+            },
+            booked_to: {
+              lte: to,
+            },
+            status: BookingStatus.APPROVED,
+          },
           // must not be able booking if there is already a pending booking for the same period by same claimant
           {
             booked_from: {
@@ -58,6 +67,16 @@ export class BookingService {
             },
             booked_to: {
               gte: to,
+            },
+            status: BookingStatus.PENDING,
+            claimant_id: claimantPublicId,
+          },
+          {
+            booked_from: {
+              gte: from,
+            },
+            booked_to: {
+              lte: to,
             },
             status: BookingStatus.PENDING,
             claimant_id: claimantPublicId,
